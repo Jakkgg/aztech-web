@@ -366,6 +366,77 @@
   .proc-item h3{margin-top:10px; font-size:19px; color:var(--ink); text-transform:uppercase;}
   .proc-item p{margin-top:8px; font-size:14.5px; color:var(--ink-soft); line-height:1.55;}
 
+  /* ---------- FAQ ---------- */
+  .faq{background:var(--cream); border-top:3px solid var(--ink); border-bottom:3px solid var(--ink);}
+  .faq-grid{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:52px 40px;
+  }
+  @media (max-width:760px){ .faq-grid{grid-template-columns:1fr; gap:46px;} }
+
+  .faq-item{display:flex; flex-direction:column;}
+  .faq-q{
+    align-self:flex-start;
+    font-family:'Space Mono', monospace;
+    font-weight:700;
+    font-size:12.5px;
+    letter-spacing:0.05em;
+    text-transform:uppercase;
+    background:var(--orange);
+    color:var(--cream-lt);
+    padding:11px 18px;
+    border:2.5px solid var(--ink);
+    box-shadow:4px 4px 0 var(--ink);
+    transform:rotate(-1.4deg);
+    max-width:88%;
+  }
+  .faq-a{
+    position:relative;
+    align-self:flex-end;
+    max-width:92%;
+    margin-top:14px;
+    background:var(--paper);
+    border:3px solid var(--ink);
+    box-shadow:6px 6px 0 var(--ink);
+    border-radius:20px;
+    padding:20px 24px;
+    font-size:15px;
+    color:var(--ink-soft);
+    line-height:1.65;
+  }
+  .faq-a::after{
+    content:"";
+    position:absolute; left:30px; top:-15px;
+    width:0; height:0;
+    border:9px solid transparent;
+    border-bottom-color:var(--ink);
+    border-top:0;
+  }
+  .faq-a::before{
+    content:"";
+    position:absolute; left:32px; top:-10px;
+    width:0; height:0;
+    border:7px solid transparent;
+    border-bottom-color:var(--paper);
+    border-top:0;
+    z-index:1;
+  }
+  .faq-item:nth-child(even) .faq-q{
+    background:var(--green);
+    align-self:flex-end;
+    transform:rotate(1.4deg);
+  }
+  .faq-item:nth-child(even) .faq-a{
+    align-self:flex-start;
+  }
+  .faq-item:nth-child(even) .faq-a::after{
+    left:auto; right:30px;
+  }
+  .faq-item:nth-child(even) .faq-a::before{
+    left:auto; right:32px;
+  }
+
   /* ---------- ABOUT ---------- */
   .about-grid{display:grid; grid-template-columns:1fr 1fr; gap:56px; align-items:center;}
   @media (max-width:860px){ .about-grid{grid-template-columns:1fr;} }
@@ -519,6 +590,7 @@
       <a href="#servicios">Servicios</a>
       <a href="#detalle">En detalle</a>
       <a href="#proceso">Cómo trabajo</a>
+      <a href="#faq">FAQ</a>
       <a href="#sobre-mi">Sobre mí</a>
       <a href="#clientes">Clientes</a>
     </div>
@@ -707,12 +779,54 @@
   </div>
 </section>
 
+<section class="faq" id="faq">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow">FAQ</div>
+      <h2>Preguntas frecuentes.</h2>
+      <p>Antes de escribirme, puede que tu duda ya esté acá. Si no, siempre podés preguntarme directo por WhatsApp.</p>
+    </div>
+
+    <div class="faq-grid">
+      <div class="faq-item">
+        <div class="faq-q">¿Cuánto tarda una reparación?</div>
+        <div class="faq-a">Depende del problema y de si hace falta pedir algún repuesto. La mayoría de las limpiezas y mantenimientos los devuelvo en el día o al día siguiente. Si hay que esperar un repuesto, te aviso el tiempo estimado apenas lo confirmo.</div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q">¿El diagnóstico tiene costo?</div>
+        <div class="faq-a">No, el diagnóstico es gratis. Reviso el equipo, te digo qué tiene y cuánto sale arreglarlo, y recién ahí decidís si seguimos con la reparación.</div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q">¿El trabajo tiene garantía?</div>
+        <div class="faq-a">Sí. Si el mismo problema vuelve a aparecer después de la reparación, lo reviso sin cargo con un plazo de 30 dias.</div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q">¿Trabajás con consolas viejas o descontinuadas?</div>
+        <div class="faq-a">Sí, de hecho es lo que más me gusta. PS1, PS2, Nintendo 64, Xbox 360, SEGAs y también notebooks o PCs viejas que ya nadie quiere tocar.</div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q">¿Cómo hago para llevarte el equipo?</div>
+        <div class="faq-a">Coordinamos todo por Facebook o Whatsapp. El retiro y la entrega son en mi domicilio, en Barrio Chacra 13.</div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q">¿Y si el problema no tiene solución?</div>
+        <div class="faq-a">Si después de revisarlo veo que no se puede arreglar, o que no conviene por el costo, te lo digo directamente y no te cobro nada.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <section id="sobre-mi">
   <div class="wrap">
     <div class="about-grid">
       <div class="about-copy">
         <div class="eyebrow">Sobre mí</div>
-        <h2 style="margin-top:12px; font-size:clamp(30px,4.8vw,42px); color:var(--ink);">¿Quier soy?.</h2>
+        <h2 style="margin-top:12px; font-size:clamp(30px,4.8vw,42px); color:var(--ink);">¿Quier soy?</h2>
         <p>Soy <strong>Thiago Azario</strong>, trabajo independiente desde mi casa reparando consolas, PCs, notebooks y celulares. Compro yo mismo cada repuesto, la pasta térmica y las herramientas que uso.</p>
         <p>Me apasiona la tecnología, la informática, la electrónica y los videojuegos —sobre todo las consolas retro. Es un laburo que disfruto de verdad, no solo un trabajo.</p>
       </div>
@@ -722,7 +836,7 @@
         <div class="stat-row"><span class="label">Mensajes</span><span class="value">A cualquier hora</span></div>
         <div class="stat-row"><span class="label">Retiro y entrega</span><span class="value">En mi domicilio</span></div>
         <div class="stat-row"><span class="label">Repuestos</span><span class="value">Se avisan antes</span></div>
-        <div class="stat-row"><span class="label">Contacto</span><span class="value">Solo WhatsApp</span></div>
+        <div class="stat-row"><span class="label">Contacto</span><span class="value">Facebook - WhatsApp</span></div>
       </div>
     </div>
   </div>
