@@ -41,6 +41,9 @@ function actualizarModoModal() {
   authModalTitle.textContent = esLogin ? 'Iniciar sesión' : 'Crear cuenta';
   authSubmitBtn.textContent = esLogin ? 'Iniciar sesión' : 'Crear cuenta';
   authPass.setAttribute('autocomplete', esLogin ? 'current-password' : 'new-password');
+
+  const usernameWrap = document.getElementById('auth-username-wrap');
+  if (usernameWrap) usernameWrap.style.display = esLogin ? 'none' : 'block';
 }
 
 function abrirAuthModal(mode, mensaje) {
