@@ -841,6 +841,42 @@
   .foot-wrap .brand .badge-dot{background:var(--orange); border-color:var(--cream-lt);}
   footer .fine{font-family:'Space Mono', monospace; font-size:11.5px; color:var(--cream-dk); letter-spacing:0.03em;}
 
+  /* ---------- AUTH (login / registro) ---------- */
+  .auth-area{ display:flex; align-items:center; gap:8px; }
+  .auth-hello{
+    font-family:'Space Mono', monospace; font-weight:700; font-size:11px;
+    letter-spacing:0.04em; text-transform:uppercase; color:var(--ink-soft);
+    white-space:nowrap;
+  }
+  .nav-cta.auth-register{ background:var(--orange); }
+  .nav-cta.auth-logout{ background:var(--ink); }
+
+  .modal-overlay{
+    position:fixed; inset:0; z-index:3000;
+    background:rgba(27,23,18,0.78);
+    display:none; align-items:center; justify-content:center;
+    padding:20px;
+  }
+  .modal-overlay.open{ display:flex; }
+  .modal-box{
+    background:var(--paper); border:3px solid var(--ink); box-shadow:8px 8px 0 var(--ink);
+    max-width:380px; width:100%; padding:30px 26px 26px; position:relative;
+  }
+  .modal-close{
+    position:absolute; top:12px; right:14px;
+    background:none; border:none; font-size:20px; line-height:1; cursor:pointer; color:var(--ink);
+  }
+  .modal-tabs{ display:flex; gap:8px; margin-bottom:20px; }
+  .modal-tab{
+    flex:1; padding:10px; font-family:'Space Mono', monospace; font-weight:700; font-size:11.5px;
+    text-transform:uppercase; letter-spacing:0.05em;
+    background:var(--cream-lt); border:2px solid var(--ink); cursor:pointer; color:var(--ink-soft);
+  }
+  .modal-tab.active{ background:var(--orange); color:var(--cream-lt); }
+  .modal-msg{ font-size:13px; color:var(--ink-soft); line-height:1.5; margin-bottom:16px; display:none; }
+  .modal-box h3{ font-size:22px; margin-bottom:4px; }
+  .auth-error{ color:#B0413E; font-size:12.5px; margin-top:10px; display:none; }
+
   @media (prefers-reduced-motion: reduce){ *{transition:none !important;} }
   a:focus-visible, button:focus-visible{outline:3px solid var(--orange); outline-offset:3px;}
 </style>
@@ -865,6 +901,10 @@
       <a href="#resenas">Reseñas</a>
     </div>
     <div class="nav-ctas">
+      <div class="auth-area" id="auth-area">
+        <button type="button" class="nav-cta" id="btn-login-nav">Iniciar sesión</button>
+        <button type="button" class="nav-cta auth-register" id="btn-register-nav">Registrarse</button>
+      </div>
       <a class="nav-cta fb" href="https://www.facebook.com/profile.php?id=61572183662180" target="_blank" rel="noopener" aria-label="AZ TECH en Facebook">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M22 12.06C22 6.5 17.52 2 12 2S2 6.5 2 12.06c0 5.02 3.66 9.18 8.44 9.94v-7.03H7.9v-2.91h2.54V9.83c0-2.51 1.49-3.89 3.77-3.89 1.09 0 2.24.2 2.24.2v2.47h-1.26c-1.24 0-1.63.78-1.63 1.58v1.9h2.78l-.44 2.91h-2.34V22c4.78-.76 8.44-4.92 8.44-9.94z"/></svg>
         <span class="txt">Facebook</span>
@@ -1145,7 +1185,7 @@
         <h3>Dejá la tuya</h3>
 
         <label class="rf-label" for="resena-nombre">Tu nombre</label>
-        <input class="rf-input" type="text" id="resena-nombre" placeholder="Ej: Thiago" required>
+        <input class="rf-input" type="text" id="resena-nombre" placeholder="Ej: Brayan" required>
 
         <label class="rf-label" for="resena-equipo">Qué equipo trajiste a reparar</label>
         <input class="rf-input" type="text" id="resena-equipo" placeholder="Ej: PS4 Slim, notebook Lenovo, iPhone 11...">
@@ -1166,8 +1206,8 @@
         <input class="rf-file" type="file" id="resena-foto" accept="image/*">
         <div class="rf-preview" id="rf-preview"></div>
 
-        <button type="submit" class="btn-primary rf-submit">Guardar mi reseña →</button>
-        <p class="rf-note">Tu reseña se guarda automáticamente. La reviso y en poco tiempo aparece publicada acá en la página.</p>
+        <button type="submit" class="btn-primary rf-submit">Publicar reseña →</button>
+        <p class="rf-note">Necesitás iniciar sesión para publicar. La reviso y en poco tiempo aparece publicada acá en la página.</p>
       </form>
     </div>
   </div>
@@ -1318,6 +1358,26 @@
   }, 1600);
 })();
 </script>
+
+<div class="modal-overlay" id="auth-modal">
+  <div class="modal-box ink-card">
+    <button type="button" class="modal-close" id="auth-modal-close" aria-label="Cerrar">✕</button>
+    <div class="modal-tabs">
+      <button type="button" class="modal-tab active" data-mode="login">Iniciar sesión</button>
+      <button type="button" class="modal-tab" data-mode="registro">Registrarse</button>
+    </div>
+    <h3 id="auth-modal-title">Iniciar sesión</h3>
+    <p class="modal-msg" id="auth-modal-msg"></p>
+    <form id="auth-form">
+      <label class="rf-label" for="auth-email">Email</label>
+      <input class="rf-input" type="email" id="auth-email" required autocomplete="email">
+      <label class="rf-label" for="auth-pass">Contraseña</label>
+      <input class="rf-input" type="password" id="auth-pass" required minlength="6" autocomplete="current-password">
+      <button type="submit" class="btn-primary" id="auth-submit-btn" style="width:100%; justify-content:center; margin-top:18px;">Iniciar sesión</button>
+      <p class="auth-error" id="auth-error"></p>
+    </form>
+  </div>
+</div>
 
 <script type="module" src="firebase-config.js"></script>
 <script type="module" src="resenas.js"></script>
