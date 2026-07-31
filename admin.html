@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AZ TECH — Admin de reseñas</title>
+<meta name="robots" content="noindex, nofollow">
+<style>
+  :root{
+    --cream:#DCC9A9; --cream-lt:#EDE0C8; --ink:#1B1712; --ink-soft:#3A3226;
+    --orange:#D9782F; --green:#4E6851; --paper:#F1E6D2; --red:#B0413E;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{
+    font-family:'Segoe UI', sans-serif;
+    background:var(--cream); color:var(--ink);
+    min-height:100vh;
+    display:flex; align-items:center; justify-content:center;
+    padding:24px;
+  }
+  .card{
+    background:var(--paper); border:3px solid var(--ink); box-shadow:7px 7px 0 var(--ink);
+    padding:32px; width:100%; max-width:420px;
+  }
+  h1{font-size:22px; margin-bottom:20px;}
+  label{display:block; font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:0.05em; margin:14px 0 6px; color:var(--ink-soft);}
+  input{
+    width:100%; padding:10px 12px; border:2px solid var(--ink); background:var(--cream-lt);
+    font-size:15px; color:var(--ink);
+  }
+  button{
+    font-family:inherit; font-weight:700; font-size:13px; text-transform:uppercase; letter-spacing:0.05em;
+    padding:12px 20px; border:2.5px solid var(--ink); cursor:pointer;
+    box-shadow:4px 4px 0 var(--ink); transition:transform .12s, box-shadow .12s;
+  }
+  button:hover{transform:translate(-2px,-2px); box-shadow:6px 6px 0 var(--ink);}
+  button:disabled{opacity:.5; cursor:not-allowed; transform:none; box-shadow:4px 4px 0 var(--ink);}
+  .btn-login{background:var(--orange); color:var(--cream-lt); width:100%; margin-top:20px;}
+  .error{color:var(--red); font-size:13px; margin-top:10px; display:none;}
+
+  #panel{display:none; width:100%; max-width:760px;}
+  .top-bar{display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;}
+  .top-bar h1{margin:0;}
+  .logout{background:var(--cream-lt); color:var(--ink); font-size:11px; padding:8px 14px; box-shadow:3px 3px 0 var(--ink);}
+
+  .rev-card{
+    background:var(--paper); border:3px solid var(--ink); box-shadow:6px 6px 0 var(--ink);
+    padding:20px 22px; margin-bottom:18px;
+  }
+  .rev-top{display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;}
+  .rev-name{font-size:18px; font-weight:700;}
+  .rev-stars{color:var(--orange); letter-spacing:2px;}
+  .rev-equipo{font-size:12.5px; color:var(--ink-soft); margin-top:2px;}
+  .rev-text{margin-top:10px; font-size:14.5px; line-height:1.6; color:var(--ink-soft);}
+  .rev-photo{margin-top:12px; max-width:140px; border:2px solid var(--ink); display:block;}
+  .rev-actions{display:flex; gap:10px; margin-top:16px;}
+  .btn-aprobar{background:var(--green); color:var(--cream-lt);}
+  .btn-rechazar{background:var(--red); color:var(--cream-lt);}
+  .empty{font-size:14px; color:var(--ink-soft); text-align:center; padding:30px; border:2px dashed var(--ink-soft);}
+</style>
+</head>
+<body>
+
+<div class="card" id="login-box">
+  <h1>AZ TECH — Panel de reseñas</h1>
+  <form id="login-form">
+    <label for="email">Email</label>
+    <input type="email" id="email" required autocomplete="username">
+    <label for="pass">Contraseña</label>
+    <input type="password" id="pass" required autocomplete="current-password">
+    <button type="submit" class="btn-login">Ingresar</button>
+    <p class="error" id="login-error"></p>
+  </form>
+</div>
+
+<div id="panel">
+  <div class="top-bar">
+    <h1>Reseñas pendientes</h1>
+    <button class="logout" id="logout-btn">Salir</button>
+  </div>
+  <div id="pendientes-list"><p class="empty">Cargando...</p></div>
+</div>
+
+<script type="module">
+  import { db, auth } from './firebase-config.js';
+  import { signInWithEmailAndPassword, signOut, onAuthStateChanged }
+    from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+  import { collection, query, where, orderBy, getDocs, doc, updateDoc, deleteDoc }
+    from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+  const loginBox = document.getElementById('login-box');
+  const panel = document.getElementById('panel');
+  const loginForm = document.getElementById('login-form');
+  const loginError = document.getElementById('login-error');
+  const logoutBtn = document.getElementById('logout-btn');
+  const list = document.getElementById('pendientes-list');
+
+  loginForm.addEventListener('submit', async function(e){
+    e.preventDefault();
+    loginError.style.display = 'none';
+    const email = document.getElementById('email').value.trim();
+    const pass = document.getElementById('pass').value;
+    try{
+      await signInWithEmailAndPassword(auth, email, pass);
+    }catch(err){
+      loginError.textContent = 'Email o contraseña incorrectos.';
+      loginError.style.display = 'block';
+    }
+  });
+
+  logoutBtn.addEventListener('click', function(){ signOut(auth); });
+
+  onAuthStateChanged(auth, function(user){
+    if(user){
+      loginBox.style.display = 'none';
+      panel.style.display = 'block';
+      cargarPendientes();
+    }else{
+      loginBox.style.display = 'block';
+      panel.style.display = 'none';
+    }
+  });
+
+  function escapeHTML(str){
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  async function cargarPendientes(){
+    list.innerHTML = '<p class="empty">Cargando...</p>';
+    try{
+      const q = query(collection(db, 'resenas'), where('aprobada','==', false), orderBy('creada','desc'));
+      const snap = await getDocs(q);
+
+      if(snap.empty){
+        list.innerHTML = '<p class="empty">No hay reseñas pendientes por ahora.</p>';
+        return;
+      }
+
+      list.innerHTML = '';
+      snap.forEach(function(docSnap){
+        const r = docSnap.data();
+        const id = docSnap.id;
+        const estrellas = '★'.repeat(r.puntaje || 0) + '☆'.repeat(5 - (r.puntaje || 0));
+
+        const card = document.createElement('div');
+        card.className = 'rev-card';
+        card.innerHTML =
+          '<div class="rev-top">' +
+            '<span class="rev-name">' + escapeHTML(r.nombre) + '</span>' +
+            '<span class="rev-stars">' + estrellas + '</span>' +
+          '</div>' +
+          (r.equipo ? '<div class="rev-equipo">Equipo: ' + escapeHTML(r.equipo) + '</div>' : '') +
+          (r.autorEmail ? '<div class="rev-equipo">Cuenta: ' + escapeHTML(r.autorEmail) + '</div>' : '') +
+          '<p class="rev-text">' + escapeHTML(r.texto) + '</p>' +
+          (r.foto ? '<img class="rev-photo" src="' + r.foto + '">' : '') +
+          '<div class="rev-actions">' +
+            '<button class="btn-aprobar" data-id="' + id + '">Aprobar y publicar</button>' +
+            '<button class="btn-rechazar" data-id="' + id + '">Rechazar y borrar</button>' +
+          '</div>';
+        list.appendChild(card);
+      });
+
+      list.querySelectorAll('.btn-aprobar').forEach(function(btn){
+        btn.addEventListener('click', async function(){
+          btn.disabled = true;
+          await updateDoc(doc(db, 'resenas', btn.dataset.id), { aprobada: true });
+          cargarPendientes();
+        });
+      });
+
+      list.querySelectorAll('.btn-rechazar').forEach(function(btn){
+        btn.addEventListener('click', async function(){
+          if(!confirm('¿Borrar esta reseña? No se puede deshacer.')) return;
+          btn.disabled = true;
+          await deleteDoc(doc(db, 'resenas', btn.dataset.id));
+          cargarPendientes();
+        });
+      });
+
+    }catch(err){
+      console.error(err);
+      list.innerHTML = '<p class="empty">Error al cargar. Revisá la consola (F12).</p>';
+    }
+  }
+</script>
+
+</body>
+</html>
