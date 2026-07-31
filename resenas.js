@@ -124,7 +124,7 @@ function pintarAuthArea(user) {
 
   if (user) {
     console.log(auth.currentUser);
-    const nombreCorto = datosUsuario.username || user.email.split('@')[0];
+    const nombreCorto = user.displayName || user.email.split('@')[0];
     authArea.innerHTML =
       '<span class="auth-hello">Hola, ' + nombreCorto + '</span>' +
       '<button type="button" class="nav-cta auth-logout" id="btn-logout-nav">Cerrar sesión</button>';
