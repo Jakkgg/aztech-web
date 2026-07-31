@@ -6,7 +6,7 @@ import {
   collection, addDoc, getDocs, query, where, orderBy, serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import {
-  onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut
+  onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, updateProfile
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 const grid = document.getElementById('resenas-grid');
@@ -23,6 +23,8 @@ let fotoBase64 = '';
 const authArea = document.getElementById('auth-area');
 const authModal = document.getElementById('auth-modal');
 const authForm = document.getElementById('auth-form');
+const authUsernameField = document.getElementById('auth-username-field');
+const authUsername = document.getElementById('auth-username');
 const authEmail = document.getElementById('auth-email');
 const authPass = document.getElementById('auth-pass');
 const authError = document.getElementById('auth-error');
@@ -40,6 +42,8 @@ function actualizarModoModal() {
   authModalTitle.textContent = esLogin ? 'Iniciar sesión' : 'Crear cuenta';
   authSubmitBtn.textContent = esLogin ? 'Iniciar sesión' : 'Crear cuenta';
   authPass.setAttribute('autocomplete', esLogin ? 'current-password' : 'new-password');
+  authUsernameField.style.display = esLogin ? 'none' : 'block';
+  authUsername.required = !esLogin;
 }
 
 function abrirAuthModal(mode, mensaje) {
@@ -101,12 +105,21 @@ if (authForm) {
 
     const email = authEmail.value.trim();
     const pass = authPass.value;
+    const username = authUsername.value.trim();
 
     try {
       if (authMode === 'login') {
         await signInWithEmailAndPassword(auth, email, pass);
       } else {
-        await createUserWithEmailAndPassword(auth, email, pass);
+        if (!username) {
+          authError.textContent = 'Elegí un nombre de usuario.';
+          authError.style.display = 'block';
+          authSubmitBtn.disabled = false;
+          return;
+        }
+        const cred = await createUserWithEmailAndPassword(auth, email, pass);
+        await updateProfile(cred.user, { displayName: username });
+        pintarAuthArea(cred.user);
       }
       cerrarAuthModal();
       authForm.reset();
@@ -123,7 +136,7 @@ function pintarAuthArea(user) {
   if (!authArea) return;
 
   if (user) {
-    const nombreCorto = user.email ? user.email.split('@')[0] : 'usuario';
+    const nombreCorto = user.displayName || (user.email ? user.email.split('@')[0] : 'usuario');
     authArea.innerHTML =
       '<span class="auth-hello">Hola, ' + nombreCorto + '</span>' +
       '<button type="button" class="nav-cta auth-logout" id="btn-logout-nav">Cerrar sesión</button>';
