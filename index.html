@@ -1,1394 +1,308 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AZ TECH — Reparación de consolas, PC y celulares en Río Grande</title>
-<meta name="description" content="Service técnico independiente en Río Grande. Reparación y mantenimiento de consolas (PS1 a PS4), PCs, notebooks y celulares. Diagnóstico gratis, sin sorpresas en el presupuesto.">
-<link rel="canonical" href="https://jakkgg.github.io/aztech-web/">
-
-<!-- Open Graph (vista previa al compartir en WhatsApp / Facebook) -->
-<meta property="og:type" content="website">
-<meta property="og:locale" content="es_AR">
-<meta property="og:site_name" content="AZ TECH">
-<meta property="og:url" content="https://jakkgg.github.io/aztech-web/">
-<meta property="og:title" content="AZ TECH — Reparación de consolas, PC y celulares en Río Grande">
-<meta property="og:description" content="Service técnico independiente en Río Grande, Tierra del Fuego. Consolas, PCs, notebooks y celulares. Diagnóstico gratis, sin sorpresas en el presupuesto.">
-<meta property="og:image" content="https://jakkgg.github.io/aztech-web/favicon.png">
-
-<!-- Twitter Card -->
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="AZ TECH — Service técnico en Río Grande, Tierra del Fuego">
-<meta name="twitter:description" content="Reparación de consolas, PCs, notebooks y celulares. Diagnóstico gratis, sin sorpresas en el presupuesto.">
-<meta name="twitter:image" content="https://jakkgg.github.io/aztech-web/favicon.png">
-
-<link rel="icon" type="image/svg+xml" href="logo.svg">
-<link rel="icon" type="image/png" href="favicon.png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bangers&family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
-<style>
-  :root{
-    --cream:#DCC9A9;
-    --cream-lt:#EDE0C8;
-    --cream-dk:#C9B48D;
-    --ink:#1B1712;
-    --ink-soft:#3A3226;
-    --orange:#D9782F;
-    --orange-dk:#A85A20;
-    --green:#4E6851;
-    --green-dk:#354A39;
-    --paper:#F1E6D2;
-    --fb-blue:#1877F2;
-    --fb-blue-dk:#0F5AC7;
-  }
-
-  *{box-sizing:border-box; margin:0; padding:0;}
-  html{scroll-behavior:smooth;}
-
-  body{
-    background:var(--cream);
-    color:var(--ink);
-    font-family:'Space Grotesk', sans-serif;
-    font-weight:500;
-    position:relative;
-    overflow-x:hidden;
-  }
-
-  /* halftone dot texture, comic-print style */
-  body::before{
-    content:"";
-    position:fixed; inset:0;
-    background-image: radial-gradient(var(--ink) 1px, transparent 1.2px);
-    background-size: 5px 5px;
-    opacity:0.05;
-    pointer-events:none;
-    z-index:400;
-  }
-
-  a{color:inherit; text-decoration:none;}
-  ul{list-style:none;}
-
-  .wrap{max-width:1120px; margin:0 auto; padding:0 24px;}
-
-  .eyebrow{
-    font-family:'Space Mono', monospace;
-    font-weight:700;
-    font-size:12px;
-    letter-spacing:0.28em;
-    text-transform:uppercase;
-    color:var(--orange);
-    display:flex; align-items:center; gap:10px;
-  }
-  .eyebrow::before{content:"●"; font-size:8px; color:var(--orange);}
-
-  h1,h2,h3{
-    font-family:'Bangers', cursive;
-    font-weight:400;
-    letter-spacing:0.02em;
-  }
-
-  /* thick-border comic card mixin via class */
-  .ink-card{
-    border:3px solid var(--ink);
-    box-shadow:7px 7px 0 var(--ink);
-    background:var(--paper);
-  }
-
-  /* ==================================================================
-     INTRO SPLASH — rápida: fondo naranja girando + logo que aparece
-     chiquito, pega un salto grande, y se achica de nuevo. Todo en
-     poco más de un segundo.
-     ================================================================== */
-  #intro-splash{
-    position:fixed;
-    inset:0;
-    z-index:9999;
-    background:var(--orange);
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    overflow:hidden;
-    animation: introOut .3s ease forwards;
-    animation-delay:1.05s;
-  }
-  #intro-splash .spin-bg{
-    position:absolute;
-    width:260vmax;
-    height:260vmax;
-    left:50%; top:50%;
-    margin-left:-130vmax;
-    margin-top:-130vmax;
-    background:
-      repeating-conic-gradient(
-        var(--ink) 0deg 12deg,
-        transparent 12deg 30deg
-      );
-    opacity:0.16;
-    animation: spinBg 1.3s cubic-bezier(.3,0,.4,1) forwards;
-  }
-  @keyframes spinBg{
-    0%{   transform:rotate(0deg)   scale(0.3); opacity:0; }
-    12%{  opacity:.16; }
-    100%{ transform:rotate(650deg) scale(1);   opacity:.16; }
-  }
-
-  #intro-splash .intro-logo{
-    position:relative;
-    z-index:2;
-    width:min(50vw, 280px);
-    height:auto;
-    opacity:0;
-    filter:drop-shadow(0 8px 0 rgba(0,0,0,0.25));
-    animation: logoBeat 1.1s cubic-bezier(.37,0,.63,1) forwards;
-  }
-
-  @keyframes logoBeat{
-    0%{   transform:scale(0.12); opacity:0; }
-    12%{  opacity:1; }
-    50%{  transform:scale(1.3);  opacity:1; }
-    88%{  opacity:1; }
-    100%{ transform:scale(0.12); opacity:0; }
-  }
-
-  @keyframes introOut{
-    0%{   opacity:1; visibility:visible; }
-    100%{ opacity:0; visibility:hidden; pointer-events:none; }
-  }
-
-  #intro-splash.skip-now{
-    animation: introOut .3s ease forwards !important;
-    animation-delay:0s !important;
-  }
-  #intro-splash.skip-now .intro-logo,
-  #intro-splash.skip-now .spin-bg{ animation:none; opacity:0; }
-
-  @media (prefers-reduced-motion: reduce){
-    #intro-splash{ animation:introOut .01s linear forwards; animation-delay:0s; }
-    #intro-splash .spin-bg{ display:none; }
-    #intro-splash .intro-logo{ animation:none; opacity:1; }
-  }
-
-  /* ---------- NAV ---------- */
-  header{
-    position:sticky; top:0; z-index:100;
-    background:var(--cream);
-    border-bottom:3px solid var(--ink);
-  }
-  nav{
-    max-width:1200px; margin:0 auto; padding:16px 24px;
-    display:grid; grid-template-columns:auto 1fr auto; align-items:center; gap:20px;
-  }
-  .brand{
-    font-family:'Bangers', cursive;
-    font-size:26px;
-    letter-spacing:0.04em;
-    color:var(--ink);
-    display:flex; align-items:center; gap:10px;
-  }
-  .brand .badge-dot{
-    width:16px; height:16px; border-radius:50%;
-    background:var(--orange);
-    border:2px solid var(--ink);
-  }
-  .brand-logo{
-    height:46px;
-    width:auto;
-    display:block;
-    transition:transform .25s ease;
-  }
-  .brand:hover .brand-logo{
-    transform:scale(1.08) rotate(-4deg);
-  }
-  .brand:active .brand-logo{
-    transform:scale(0.94) rotate(2deg);
-  }
-  .navlinks{
-    display:flex; gap:26px;
-    justify-content:center;
-    font-family:'Space Mono', monospace;
-    font-weight:700;
-    font-size:12px; letter-spacing:0.1em; text-transform:uppercase;
-    color:var(--ink-soft);
-  }
-  .navlinks a{transition:color .15s;}
-  .navlinks a:hover{color:var(--orange);}
-  .nav-ctas{
-    display:flex; align-items:center; gap:10px; flex-wrap:wrap; justify-content:flex-end;
-  }
-  .nav-cta{
-    font-family:'Space Mono', monospace;
-    font-weight:700; font-size:12px; letter-spacing:0.06em; text-transform:uppercase;
-    padding:9px 18px;
-    background:var(--green);
-    color:var(--cream-lt);
-    border:2.5px solid var(--ink);
-    box-shadow:3px 3px 0 var(--ink);
-    transition:transform .12s, box-shadow .12s;
-    display:inline-flex; align-items:center; gap:7px;
-  }
-  .nav-cta:hover{transform:translate(-2px,-2px); box-shadow:5px 5px 0 var(--ink);}
-  .nav-cta.fb{
-    background:var(--fb-blue);
-  }
-  @media (max-width:760px){ .navlinks{display:none;} }
-  @media (max-width:480px){ .nav-cta span.txt{display:none;} .nav-cta{padding:9px 12px;} }
-
-  /* ---------- HERO ---------- */
-  .hero{
-    position:relative;
-
-    display:flex;
-    justify-content:center;
-    align-items:flex-start;
-    padding:24px 0 90px;
-
-    text-align:center;
-    overflow:hidden;
-
-    background:
-      radial-gradient(circle at 12% 20%, rgba(217,120,47,.12), transparent 40%),
-      radial-gradient(circle at 88% 75%, rgba(78,104,81,.14), transparent 45%),
-      var(--cream);
-  }
-  .hero .wrap{
-    position:relative;
-    z-index:2;
-
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-  }
-  .hero .burst{
-    position:absolute; top:-120px; left:50%; transform:translateX(-50%);
-    width:640px; height:640px;
-    background:
-      repeating-conic-gradient(var(--ink) 0deg 4deg, transparent 4deg 16deg);
-    opacity:0.06;
-    border-radius:50%;
-    pointer-events:none;
-  }
-  .hero-sticker{
-    position:relative; z-index:2;
-    display:inline-block;
-    font-family:'Space Mono', monospace;
-    font-weight:700;
-    font-size:12px;
-    letter-spacing:0.14em;
-    text-transform:uppercase;
-    background:var(--orange);
-    color:var(--cream-lt);
-    padding:9px 18px;
-    border:2.5px solid var(--ink);
-    box-shadow:4px 4px 0 var(--ink);
-    transform:rotate(-3deg);
-    margin-bottom:22px;
-  }
-  .hero h1{
-    position:relative; z-index:2;
-    font-size:clamp(58px, 12vw, 128px);
-    line-height:0.9;
-    color:var(--orange);
-    -webkit-text-stroke:2px var(--ink);
-    text-shadow:
-      6px 6px 0 var(--ink-soft);
-  }
-  .hero .sub{
-    position:relative; z-index:2;
-    margin-top:26px;
-    font-family:'Space Mono', monospace;
-    font-weight:700;
-    font-size:14px;
-    letter-spacing:0.3em;
-    text-transform:uppercase;
-    color:var(--green-dk);
-  }
-  .hero p.lead{
-    position:relative; z-index:2;
-    max-width:540px; margin:36px auto 0;
-    font-size:19px; color:var(--ink-soft); line-height:1.55;
-  }
-  .hero .ctas{
-    position:relative; z-index:2;
-    margin-top:22px;
-    display:flex; gap:18px; justify-content:center; flex-wrap:wrap;
-  }
-  .btn-primary{
-    font-family:'Space Mono', monospace;
-    font-weight:700; font-size:13.5px; letter-spacing:0.08em; text-transform:uppercase;
-    padding:17px 32px;
-    background:var(--orange);
-    color:var(--cream-lt);
-    border:3px solid var(--ink);
-    box-shadow:5px 5px 0 var(--ink);
-    display:inline-flex; align-items:center; gap:10px;
-    transition:transform .12s, box-shadow .12s;
-  }
-  .btn-primary:hover{transform:translate(-3px,-3px); box-shadow:8px 8px 0 var(--ink);}
-  .btn-ghost{
-    font-family:'Space Mono', monospace;
-    font-weight:700; font-size:13.5px; letter-spacing:0.08em; text-transform:uppercase;
-    padding:17px 32px;
-    background:var(--cream-lt);
-    color:var(--ink);
-    border:3px solid var(--ink);
-    box-shadow:5px 5px 0 var(--ink);
-    transition:transform .12s, box-shadow .12s;
-  }
-  .btn-ghost:hover{transform:translate(-3px,-3px); box-shadow:8px 8px 0 var(--ink);}
-
-  /* ---------- SECTION shared ---------- */
-  section{padding:96px 0;}
-  .sec-head{max-width:640px; margin-bottom:52px;}
-  .sec-head h2{
-    font-size:clamp(34px,5.5vw,52px);
-    margin-top:12px;
-    color:var(--ink);
-  }
-  .sec-head p{margin-top:14px; font-size:17px; color:var(--ink-soft); line-height:1.6;}
-
-  /* ---------- SERVICES ---------- */
-  .services{background:var(--cream-dk); border-top:3px solid var(--ink); border-bottom:3px solid var(--ink);}
-  .svc-grid{
-    display:grid; grid-template-columns:repeat(4,1fr); gap:24px;
-  }
-  @media (max-width:900px){ .svc-grid{grid-template-columns:repeat(2,1fr);} }
-  @media (max-width:520px){ .svc-grid{grid-template-columns:1fr;} }
-
-  .svc-card{
-    padding:30px 24px;
-    position:relative;
-    transition:transform .15s, box-shadow .15s;
-  }
-  .svc-card:hover{transform:translate(-3px,-3px); box-shadow:10px 10px 0 var(--ink);}
-  .svc-num{
-    font-family:'Space Mono', monospace; font-weight:700;
-    font-size:11px; color:var(--orange); letter-spacing:0.1em;
-  }
-  .svc-icon{margin:16px 0 14px; color:var(--ink);}
-  .svc-card h3{font-size:24px; color:var(--ink); text-transform:uppercase;}
-  .svc-card p{margin-top:8px; font-size:14.5px; color:var(--ink-soft); line-height:1.55;}
-
-  /* ---------- SPOTLIGHT: PlayStation ---------- */
-  .spotlight{
-    position:relative;
-    background:var(--cream);
-  }
-  .spot-grid{
-    display:grid; grid-template-columns:0.9fr 1.1fr; gap:56px; align-items:start;
-  }
-  @media (max-width:860px){ .spot-grid{grid-template-columns:1fr;} }
-
-  .spot-left h2{font-size:clamp(30px,4.8vw,46px); color:var(--ink); margin-top:12px; line-height:1.02;}
-  .spot-left p{margin-top:16px; color:var(--ink-soft); font-size:16.5px; line-height:1.65;}
-
-  .speech-bubble{
-    position:relative;
-    margin-top:28px;
-    background:var(--green);
-    color:var(--cream-lt);
-    padding:20px 22px;
-    border:3px solid var(--ink);
-    box-shadow:5px 5px 0 var(--ink);
-    font-family:'Space Mono', monospace;
-    font-size:13.5px;
-    line-height:1.65;
-    border-radius:14px;
-  }
-  .speech-bubble::after{
-    content:"";
-    position:absolute; left:36px; bottom:-16px;
-    width:0; height:0;
-    border:10px solid transparent;
-    border-top-color:var(--ink);
-    border-bottom:0;
-  }
-  .speech-bubble::before{
-    content:"";
-    position:absolute; left:38px; bottom:-11px;
-    width:0; height:0;
-    border:8px solid transparent;
-    border-top-color:var(--green);
-    border-bottom:0;
-    z-index:1;
-  }
-
-  .card-panel{background:var(--paper); border:3px solid var(--ink); box-shadow:8px 8px 0 var(--ink);}
-  .card-panel .cp-head{
-    padding:16px 22px;
-    border-bottom:3px solid var(--ink);
-    background:var(--orange);
-    display:flex; align-items:center; gap:10px;
-  }
-  .card-panel .cp-head .dot{width:9px;height:9px;border-radius:50%;background:var(--cream-lt); border:1.5px solid var(--ink);}
-  .card-panel .cp-head span{
-    font-family:'Space Mono', monospace; font-weight:700;
-    font-size:12px; letter-spacing:0.14em; text-transform:uppercase; color:var(--cream-lt);
-  }
-  .cp-body{padding:26px 26px 30px;}
-  .cp-block{margin-bottom:24px;}
-  .cp-block:last-child{margin-bottom:0;}
-  .cp-block h4{
-    font-family:'Bangers', cursive;
-    font-size:20px; letter-spacing:0.02em; color:var(--ink); margin-bottom:8px;
-  }
-  .cp-block ul li{position:relative; padding-left:18px; font-size:15px; color:var(--ink-soft); line-height:1.7;}
-  .cp-block ul li::before{content:"▸"; position:absolute; left:0; top:0; color:var(--orange); font-weight:700;}
-  .cp-block p{font-size:15px; color:var(--ink-soft); line-height:1.7;}
-
-  /* ---------- PROCESS ---------- */
-  .process{background:var(--green); border-top:3px solid var(--ink); border-bottom:3px solid var(--ink);}
-  .process .eyebrow{color:var(--cream-lt);}
-  .process .eyebrow::before{color:var(--cream-lt);}
-  .process .sec-head h2{color:var(--cream-lt);}
-  .proc-list{display:grid; grid-template-columns:repeat(4,1fr); gap:26px;}
-  @media (max-width:860px){ .proc-list{grid-template-columns:repeat(2,1fr);} }
-  @media (max-width:520px){ .proc-list{grid-template-columns:1fr;} }
-  .proc-item{
-    background:var(--cream-lt);
-    border:3px solid var(--ink);
-    box-shadow:5px 5px 0 var(--ink);
-    padding:22px;
-  }
-  .proc-item .pn{
-    font-family:'Bangers', cursive;
-    font-size:42px;
-    color:var(--orange);
-    line-height:1;
-  }
-  .proc-item h3{margin-top:10px; font-size:19px; color:var(--ink); text-transform:uppercase;}
-  .proc-item p{margin-top:8px; font-size:14.5px; color:var(--ink-soft); line-height:1.55;}
-
-  /* ---------- FAQ ---------- */
-  .faq{background:var(--cream); border-top:3px solid var(--ink); border-bottom:3px solid var(--ink);}
-  .faq-grid{
-    display:grid;
-    grid-template-columns:repeat(2,1fr);
-    gap:52px 40px;
-  }
-  @media (max-width:760px){ .faq-grid{grid-template-columns:1fr; gap:46px;} }
-
-  .faq-item{display:flex; flex-direction:column;}
-  .faq-q{
-    align-self:flex-start;
-    font-family:'Space Mono', monospace;
-    font-weight:700;
-    font-size:12.5px;
-    letter-spacing:0.05em;
-    text-transform:uppercase;
-    background:var(--orange);
-    color:var(--cream-lt);
-    padding:11px 18px;
-    border:2.5px solid var(--ink);
-    box-shadow:4px 4px 0 var(--ink);
-    transform:rotate(-1.4deg);
-    max-width:88%;
-  }
-  .faq-a{
-    position:relative;
-    align-self:flex-end;
-    max-width:92%;
-    margin-top:14px;
-    background:var(--paper);
-    border:3px solid var(--ink);
-    box-shadow:6px 6px 0 var(--ink);
-    border-radius:20px;
-    padding:20px 24px;
-    font-size:15px;
-    color:var(--ink-soft);
-    line-height:1.65;
-  }
-  .faq-a::after{
-    content:"";
-    position:absolute; left:30px; top:-15px;
-    width:0; height:0;
-    border:9px solid transparent;
-    border-bottom-color:var(--ink);
-    border-top:0;
-  }
-  .faq-a::before{
-    content:"";
-    position:absolute; left:32px; top:-10px;
-    width:0; height:0;
-    border:7px solid transparent;
-    border-bottom-color:var(--paper);
-    border-top:0;
-    z-index:1;
-  }
-  .faq-item:nth-child(even) .faq-q{
-    background:var(--green);
-    align-self:flex-end;
-    transform:rotate(1.4deg);
-  }
-  .faq-item:nth-child(even) .faq-a{
-    align-self:flex-start;
-  }
-  .faq-item:nth-child(even) .faq-a::after{
-    left:auto; right:30px;
-  }
-  .faq-item:nth-child(even) .faq-a::before{
-    left:auto; right:32px;
-  }
-
-  /* ---------- ABOUT ---------- */
-  .about-grid{display:grid; grid-template-columns:1fr 1fr; gap:56px; align-items:center;}
-  @media (max-width:860px){ .about-grid{grid-template-columns:1fr;} }
-  .about-copy p{font-size:16.5px; color:var(--ink-soft); line-height:1.7; margin-bottom:16px;}
-  .about-copy strong{color:var(--ink); font-weight:700;}
-
-  .polaroid{
-    display:inline-block;
-    background:var(--cream-lt);
-    border:3px solid var(--ink);
-    box-shadow:6px 6px 0 var(--ink);
-    padding:10px 10px 16px;
-    transform:rotate(-2.5deg);
-    margin-bottom:26px;
-  }
-  .polaroid img{
-    display:block;
-    width:150px; height:150px;
-    object-fit:cover;
-    border:2px solid var(--ink);
-  }
-  .polaroid .cap{
-    margin-top:10px;
-    font-family:'Space Mono', monospace;
-    font-weight:700;
-    font-size:11.5px;
-    letter-spacing:0.04em;
-    text-align:center;
-    color:var(--ink-soft);
-  }
-
-  .stat-panel{background:var(--paper); border:3px solid var(--ink); box-shadow:8px 8px 0 var(--ink); padding:32px;}
-  .stat-row{display:flex; justify-content:space-between; padding:15px 0; border-bottom:2px dashed var(--ink-soft);}
-  .stat-row:last-child{border-bottom:none;}
-  .stat-row .label{
-    font-family:'Space Mono', monospace; font-weight:700;
-    font-size:12px; letter-spacing:0.06em; text-transform:uppercase; color:var(--ink-soft);
-  }
-  .stat-row .value{font-family:'Bangers', cursive; font-size:18px; color:var(--ink); text-align:right;}
-
-  /* ---------- CLIENTES ---------- */
-  .clientes{
-    background:var(--green);
-    border-top:3px solid var(--ink);
-    border-bottom:3px solid var(--ink);
-  }
-  .clientes .eyebrow{color:var(--cream-lt);}
-  .clientes .eyebrow::before{color:var(--cream-lt);}
-  .clientes .sec-head h2{color:var(--cream-lt);}
-  .clientes .sec-head p{color:var(--cream-dk);}
-  .clientes-grid{
-    display:grid;
-    grid-template-columns:repeat(4,1fr);
-    gap:20px;
-  }
-  @media (max-width:860px){ .clientes-grid{grid-template-columns:repeat(2,1fr);} }
-  @media (max-width:520px){ .clientes-grid{grid-template-columns:1fr;} }
-  .cl-tile{
-    aspect-ratio:1/1;
-    background:var(--cream-lt);
-    border:3px solid var(--ink);
-    box-shadow:5px 5px 0 var(--ink);
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    justify-content:center;
-    gap:8px;
-    color:var(--ink-soft);
-    text-align:center;
-    padding:14px;
-  }
-  .cl-tile.filled{padding:0; overflow:hidden; position:relative; cursor:pointer;}
-  .cl-tile.filled img{width:100%; height:100%; object-fit:cover; display:block; transition:transform .3s ease, filter .3s ease;}
-  .cl-tile.filled:hover img{transform:scale(1.08); filter:brightness(.75);}
-  .cl-tile.filled::after{
-    content:"🔍 Ver foto";
-    position:absolute; inset:0;
-    display:flex; align-items:center; justify-content:center;
-    font-family:'Space Mono', monospace;
-    font-weight:700;
-    font-size:12px;
-    letter-spacing:0.06em;
-    text-transform:uppercase;
-    color:var(--cream-lt);
-    text-shadow:0 1px 3px rgba(0,0,0,.6);
-    opacity:0;
-    transition:opacity .3s ease;
-    pointer-events:none;
-  }
-  .cl-tile.filled:hover::after{opacity:1;}
-
-  /* ---------- LIGHTBOX ---------- */
-  #lightbox{
-    position:fixed; inset:0; z-index:2000;
-    background:rgba(27,23,18,0.92);
-    display:none;
-    align-items:center; justify-content:center;
-    padding:40px 20px;
-    cursor:zoom-out;
-  }
-  #lightbox.open{display:flex;}
-  #lightbox img{
-    max-width:min(900px, 92vw);
-    max-height:86vh;
-    object-fit:contain;
-    border:3px solid var(--cream-lt);
-    box-shadow:0 20px 60px rgba(0,0,0,.5);
-    cursor:default;
-  }
-  #lightbox .lb-close{
-    position:absolute;
-    top:22px; right:26px;
-    width:42px; height:42px;
-    border-radius:50%;
-    background:var(--cream-lt);
-    border:2px solid var(--ink);
-    color:var(--ink);
-    font-family:'Space Mono', monospace;
-    font-size:18px;
-    font-weight:700;
-    display:flex; align-items:center; justify-content:center;
-    cursor:pointer;
-  }
-  .cl-tile .plus{
-    font-family:'Bangers', cursive;
-    font-size:34px;
-    color:var(--green-dk);
-    line-height:1;
-  }
-  .cl-tile .cl-label{
-    font-family:'Space Mono', monospace;
-    font-weight:700;
-    font-size:11px;
-    letter-spacing:0.06em;
-    text-transform:uppercase;
-  }
-
-  /* ---------- RESEÑAS ---------- */
-  .resenas{background:var(--cream); border-top:3px solid var(--ink); border-bottom:3px solid var(--ink);}
-  .resenas-layout{
-    display:grid;
-    grid-template-columns:1.1fr 0.9fr;
-    gap:40px;
-    align-items:start;
-  }
-  @media (max-width:900px){ .resenas-layout{grid-template-columns:1fr;} }
-
-  .resenas-grid{
-    display:flex;
-    flex-direction:column;
-    gap:20px;
-  }
-  .resena-card{
-    background:var(--paper);
-    border:3px solid var(--ink);
-    box-shadow:6px 6px 0 var(--ink);
-    padding:22px 24px;
-  }
-  .resena-card .rc-top{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:10px;
-    flex-wrap:wrap;
-  }
-  .resena-card .rc-name{
-    font-family:'Bangers', cursive;
-    font-size:19px;
-    color:var(--ink);
-  }
-  .resena-card .rc-stars{
-    font-size:16px;
-    letter-spacing:2px;
-    color:var(--cream-dk);
-  }
-  .resena-card .rc-stars .on{ color:var(--orange); }
-  .resena-card .rc-text{
-    margin-top:10px;
-    font-size:15px;
-    color:var(--ink-soft);
-    line-height:1.65;
-  }
-  .resena-card .rc-photo{
-    margin-top:14px;
-    width:120px; height:120px;
-    object-fit:cover;
-    border:2.5px solid var(--ink);
-    cursor:pointer;
-    display:block;
-  }
-  .resenas-empty{
-    font-family:'Space Mono', monospace;
-    font-size:14px;
-    color:var(--ink-soft);
-    border:2px dashed var(--ink-soft);
-    padding:24px;
-    text-align:center;
-  }
-
-  .resena-form{padding:28px 26px;}
-  .resena-form h3{
-    font-size:24px;
-    color:var(--ink);
-    margin-bottom:16px;
-  }
-  .rf-label{
-    display:block;
-    font-family:'Space Mono', monospace;
-    font-weight:700;
-    font-size:11.5px;
-    letter-spacing:0.08em;
-    text-transform:uppercase;
-    color:var(--ink-soft);
-    margin:16px 0 6px;
-  }
-  .rf-label:first-of-type{ margin-top:0; }
-  .rf-input{
-    width:100%;
-    font-family:'Space Grotesk', sans-serif;
-    font-size:15px;
-    color:var(--ink);
-    background:var(--cream-lt);
-    border:2.5px solid var(--ink);
-    padding:11px 14px;
-    resize:vertical;
-  }
-  .rf-input:focus{ outline:3px solid var(--orange); outline-offset:1px; }
-  .rf-stars{ display:flex; gap:6px; }
-  .rf-star{
-    font-size:30px;
-    line-height:1;
-    background:none;
-    border:none;
-    color:var(--cream-dk);
-    cursor:pointer;
-    padding:2px;
-    transition:transform .1s ease;
-  }
-  .rf-star:hover{ transform:scale(1.15); }
-  .rf-star.on{ color:var(--orange); }
-  .rf-file{
-    font-family:'Space Mono', monospace;
-    font-size:12.5px;
-    color:var(--ink-soft);
-  }
-  .rf-preview{ margin-top:10px; }
-  .rf-preview img{
-    width:90px; height:90px;
-    object-fit:cover;
-    border:2.5px solid var(--ink);
-  }
-  .rf-submit{ width:100%; justify-content:center; margin-top:22px; }
-  .rf-note{
-    margin-top:12px;
-    font-size:12.5px;
-    color:var(--ink-soft);
-    line-height:1.5;
-  }
-
-  /* ---------- CONTACT ---------- */
-  .contact{
-    position:relative; text-align:center;
-    background:var(--ink);
-    border-top:3px solid var(--ink);
-  }
-  .contact .eyebrow{color:var(--orange);}
-  .contact .eyebrow::before{color:var(--orange);}
-  .contact h2{font-size:clamp(38px,6.5vw,64px); color:var(--cream-lt);}
-  .contact p.lead{max-width:520px; margin:16px auto 0; color:var(--cream-dk); font-size:17px; line-height:1.6;}
-  .contact-details{margin-top:44px; display:flex; justify-content:center; gap:44px; flex-wrap:wrap;}
-  .cd-item{text-align:left; min-width:180px;}
-  .cd-item .cd-label{
-    font-family:'Space Mono', monospace; font-weight:700;
-    font-size:11px; letter-spacing:0.14em; text-transform:uppercase; color:var(--orange);
-  }
-  .cd-item .cd-value{margin-top:8px; font-size:17px; color:var(--cream-lt); font-weight:600;}
-  .contact .big-cta{margin-top:44px; display:flex; gap:18px; justify-content:center; flex-wrap:wrap;}
-  .whatsapp-btn{
-    font-family:'Space Mono', monospace; font-weight:700;
-    font-size:15px; letter-spacing:0.05em; text-transform:uppercase;
-    padding:20px 42px;
-    background:var(--green);
-    color:var(--cream-lt);
-    border:3px solid var(--cream-lt);
-    box-shadow:6px 6px 0 var(--orange);
-    display:inline-flex; align-items:center; gap:12px;
-    transition:transform .12s, box-shadow .12s;
-  }
-  .whatsapp-btn:hover{transform:translate(-3px,-3px); box-shadow:9px 9px 0 var(--orange);}
-  .facebook-btn{
-    font-family:'Space Mono', monospace; font-weight:700;
-    font-size:15px; letter-spacing:0.05em; text-transform:uppercase;
-    padding:20px 42px;
-    background:var(--fb-blue);
-    color:var(--cream-lt);
-    border:3px solid var(--cream-lt);
-    box-shadow:6px 6px 0 var(--orange);
-    display:inline-flex; align-items:center; gap:12px;
-    transition:transform .12s, box-shadow .12s;
-  }
-  .facebook-btn:hover{transform:translate(-3px,-3px); box-shadow:9px 9px 0 var(--orange);}
-
-  /* ---------- FOOTER ---------- */
-  footer{padding:32px 24px; background:var(--ink);}
-  .foot-wrap{
-    max-width:1120px; margin:0 auto;
-    display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:14px;
-  }
-  .foot-wrap .brand{font-size:19px; color:var(--cream-lt);}
-  .foot-wrap .brand .badge-dot{background:var(--orange); border-color:var(--cream-lt);}
-  footer .fine{font-family:'Space Mono', monospace; font-size:11.5px; color:var(--cream-dk); letter-spacing:0.03em;}
-
-  /* ---------- AUTH (login / registro) ---------- */
-  .auth-area{ display:flex; align-items:center; gap:8px; }
-  .auth-hello{
-    font-family:'Space Mono', monospace; font-weight:700; font-size:11px;
-    letter-spacing:0.04em; text-transform:uppercase; color:var(--ink-soft);
-    white-space:nowrap;
-  }
-  .nav-cta.auth-register{ background:var(--orange); }
-  .nav-cta.auth-logout{ background:var(--ink); }
-
-  .modal-overlay{
-    position:fixed; inset:0; z-index:3000;
-    background:rgba(27,23,18,0.78);
-    display:none; align-items:center; justify-content:center;
-    padding:20px;
-  }
-  .modal-overlay.open{ display:flex; }
-  .modal-box{
-    background:var(--paper); border:3px solid var(--ink); box-shadow:8px 8px 0 var(--ink);
-    max-width:380px; width:100%; padding:30px 26px 26px; position:relative;
-  }
-  .modal-close{
-    position:absolute; top:12px; right:14px;
-    background:none; border:none; font-size:20px; line-height:1; cursor:pointer; color:var(--ink);
-  }
-  .modal-tabs{ display:flex; gap:8px; margin-bottom:20px; }
-  .modal-tab{
-    flex:1; padding:10px; font-family:'Space Mono', monospace; font-weight:700; font-size:11.5px;
-    text-transform:uppercase; letter-spacing:0.05em;
-    background:var(--cream-lt); border:2px solid var(--ink); cursor:pointer; color:var(--ink-soft);
-  }
-  .modal-tab.active{ background:var(--orange); color:var(--cream-lt); }
-  .modal-msg{ font-size:13px; color:var(--ink-soft); line-height:1.5; margin-bottom:16px; display:none; }
-  .modal-box h3{ font-size:22px; margin-bottom:4px; }
-  .auth-error{ color:#B0413E; font-size:12.5px; margin-top:10px; display:none; }
-
-  @media (prefers-reduced-motion: reduce){ *{transition:none !important;} }
-  a:focus-visible, button:focus-visible{outline:3px solid var(--orange); outline-offset:3px;}
-</style>
-</head>
-<body>
-
-<div id="intro-splash" role="presentation" aria-hidden="true">
-  <div class="spin-bg"></div>
-  <img src="logo.svg" alt="" class="intro-logo">
-</div>
-
-<header>
-  <nav class="wrap">
-    <a class="brand" href="#" aria-label="Ir al inicio"><img src="logo.svg" class="brand-logo" alt="AZ TECH"></a>
-    <div class="navlinks">
-      <a href="#servicios">Servicios</a>
-      <a href="#detalle">En detalle</a>
-      <a href="#proceso">Cómo trabajo</a>
-      <a href="#faq">FAQ</a>
-      <a href="#sobre-mi">Sobre mí</a>
-      <a href="#clientes">Clientes</a>
-      <a href="#resenas">Reseñas</a>
-    </div>
-    <div class="nav-ctas">
-      <div class="auth-area" id="auth-area">
-        <button type="button" class="nav-cta" id="btn-login-nav">Iniciar sesión</button>
-        <button type="button" class="nav-cta auth-register" id="btn-register-nav">Registrarse</button>
-      </div>
-      <a class="nav-cta" href="https://wa.me/5492964574506?text=Hola%20AZ%20TECH!%20Quiero%20consultar%20por%20un%20servicio." target="_blank" rel="noopener">
-        <svg width="16" height="16" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true">
-        <path d="M19.11 17.21c-.29-.15-1.7-.84-1.97-.93-.26-.1-.45-.15-.64.15-.19.29-.74.93-.91 1.12-.17.19-.34.22-.63.07-.29-.15-1.24-.46-2.36-1.48-.87-.78-1.46-1.74-1.63-2.03-.17-.29-.02-.45.13-.6.13-.13.29-.34.43-.51.15-.17.19-.29.29-.49.1-.19.05-.37-.02-.51-.07-.15-.64-1.55-.88-2.12-.23-.55-.47-.47-.64-.48h-.55c-.19 0-.51.07-.78.37-.26.29-1.02.99-1.02 2.42s1.04 2.82 1.19 3.02c.15.19 2.04 3.12 4.95 4.37.69.3 1.23.48 1.65.61.69.22 1.31.19 1.81.12.55-.08 1.7-.69 1.94-1.36.24-.67.24-1.25.17-1.36-.07-.12-.26-.19-.55-.34z"/>
-        <path d="M16.02 3C8.84 3 3 8.73 3 15.8c0 2.27.61 4.49 1.77 6.43L3 29l6.98-1.81A13.1 13.1 0 0 0 16.02 28C23.2 28 29 22.27 29 15.2S23.2 3 16.02 3zm0 22.6c-1.88 0-3.72-.5-5.33-1.44l-.38-.22-4.14 1.07 1.11-4.01-.25-.41a10.3 10.3 0 0 1-1.58-5.39c0-5.73 4.73-10.39 10.56-10.39 5.82 0 10.56 4.66 10.56 10.39S21.84 25.6 16.02 25.6z"/>
-    </svg>
-      </a>
-      <a class="nav-cta fb" href="https://www.facebook.com/profile.php?id=61572183662180" target="_blank" rel="noopener" aria-label="AZ TECH en Facebook">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M22 12.06C22 6.5 17.52 2 12 2S2 6.5 2 12.06c0 5.02 3.66 9.18 8.44 9.94v-7.03H7.9v-2.91h2.54V9.83c0-2.51 1.49-3.89 3.77-3.89 1.09 0 2.24.2 2.24.2v2.47h-1.26c-1.24 0-1.63.78-1.63 1.58v1.9h2.78l-.44 2.91h-2.34V22c4.78-.76 8.44-4.92 8.44-9.94z"/></svg>
-        <span class="txt">Facebook</span>
-      </a>
-    </div>
-  </nav>
-</header>
-
-<section class="hero">
-    <div class="burst"></div>
-
-    <div class="wrap">
-
-        <div class="hero-sticker">
-            ★ SERVICE TÉCNICO INDEPENDIENTE ★
-        </div>
-
-        <h1>AZ TECH</h1>
-
-        <p class="lead">
-            Reparación, mantenimiento y liberación de consolas, PCs,
-            notebooks y celulares en Río Grande, Tierra del Fuego.
-        </p>
-
-        <div class="ctas">
-            <a class="btn-primary"
-               href="https://wa.me/5492964574506?text=Hola%20AZ%20TECH!%20Quiero%20consultar%20por%20un%20servicio."
-               target="_blank">
-                Escribir por WhatsApp →
-            </a>
-
-            <a class="btn-ghost" href="#servicios">
-                Ver servicios
-            </a>
-        </div>
-
-    </div>
-</section>
-
-<section class="services" id="servicios">
-  <div class="wrap">
-    <div class="sec-head">
-      <div class="eyebrow">Qué reparo</div>
-      <h2>Variedad en las áreas.</h2>
-      <p>Trabajo cada equipo con las herramientas y el cuidado que corresponde. Si el problema requiere un repuesto, te aviso antes de comprarlo.</p>
-    </div>
-
-    <div class="svc-grid">
-      <div class="svc-card ink-card">
-        <div class="svc-num">01 / CONSOLAS</div>
-        <div class="svc-icon">
-          <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="8" width="20" height="9" rx="4"/><circle cx="7" cy="12.5" r="1.4"/><circle cx="17" cy="11" r="1"/><circle cx="17.5" cy="13.5" r="1"/><path d="M9.5 12.5h-3M8 11v3"/></svg>
-        </div>
-        <h3>Consolas</h3>
-        <p>De PlayStation 1 a PlayStation 4 y otras plataformas: limpieza, mantenimiento, liberación y reparación.</p>
-      </div>
-
-      <div class="svc-card ink-card">
-        <div class="svc-num">02 / PCs</div>
-        <div class="svc-icon">
-          <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="12" rx="1.5"/><path d="M8 20h8M12 16v4"/></svg>
-        </div>
-        <h3>PCs de escritorio</h3>
-        <p>Armado, mantenimiento, cambio de pasta térmica, limpieza interna y diagnóstico de fallas.</p>
-      </div>
-
-      <div class="svc-card ink-card">
-        <div class="svc-num">03 / NOTEBOOKS</div>
-        <div class="svc-icon">
-          <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="4" width="16" height="10" rx="1"/><path d="M2 18h20l-1.5-3h-17z"/></svg>
-        </div>
-        <h3>Notebooks</h3>
-        <p>Limpieza, cambio de pasta térmica, revisión general y diagnóstico de problemas de hardware.</p>
-      </div>
-
-      <div class="svc-card ink-card">
-        <div class="svc-num">04 / CELULARES</div>
-        <div class="svc-icon">
-          <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="7" y="2" width="10" height="20" rx="2"/><path d="M11 19h2"/></svg>
-        </div>
-        <h3>Celulares</h3>
-        <p>Diagnóstico y reparación de fallas comunes en teléfonos. Consultame tu modelo y qué le pasa.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section class="spotlight" id="detalle">
-  <div class="wrap">
-    <div class="spot-grid">
-      <div class="spot-left">
-        <div class="eyebrow">En detalle</div>
-        <h2>Así trabajo con cada equipo que llega.</h2>
-        <p>Consolas, PCs, notebooks y celulares, cada uno con su proceso. Esto es lo que hago con cada equipo que pasa por el banco de trabajo.</p>
-        <div class="speech-bubble">
-          "Si al revisar el equipo encuentro algún problema, te aviso antes de hacer cualquier reparación. No hago ningún trabajo extra sin tu autorización."
-        </div>
-      </div>
-
-      <div class="card-panel">
-        <div class="cp-head"><span class="dot"></span><span>Consolas, PCs, notebooks y celulares</span></div>
-        <div class="cp-body">
-          <div class="cp-block">
-            <h4>🔧 Mantenimiento (todos los equipos)</h4>
-            <ul>
-              <li>Limpieza interna completa</li>
-              <li>Limpieza de la carcasa</li>
-              <li>Cambio de pasta térmica</li>
-              <li>Revisión general del equipo</li>
-            </ul>
-          </div>
-          <div class="cp-block">
-            <h4>🎮 Liberación de consolas</h4>
-            <ul>
-              <li>PS1 y PS2: chipeo</li>
-              <li>PS3: CFW o HEN según el modelo, dejo instalado MultiMAN, webMAN MOD, IRISMAN, Apollo y otras herramientas necesarias</li>
-              <li>PS4: GoldHEN</li>
-            </ul>
-          </div>
-          <div class="cp-block">
-            <h4>🎮 Juegos a pedido</h4>
-            <p>Instalo juegos a pedido. El precio depende del tamaño del juego:</p>
-            <ul>
-              <li>Chico — $1000</li>
-              <li>Mediano — $2500</li>
-              <li>Grande — $5000</li>
-            </ul>
-          </div>
-          <div class="cp-block">
-            <h4>💻 PCs y notebooks</h4>
-            <ul>
-              <li>Armado de PC a pedido</li>
-              <li>Diagnóstico de fallas de hardware (no enciende, se apaga, lentitud, ruidos)</li>
-              <li>Cambio de componentes cuando el problema lo requiere</li>
-            </ul>
-          </div>
-          <div class="cp-block">
-            <h4>📱 Celulares</h4>
-            <p>Diagnóstico y reparación de fallas comunes: batería, pantalla, carga, entre otras. Consultame tu modelo y qué le pasa.</p>
-          </div>
-          <div class="cp-block">
-            <h4>🛠️ Diagnóstico y reparación</h4>
-            <p>Si encuentro un problema (HDMI, lectora, disco, fuente, ventilador, pantalla, batería, etc.), te aviso antes de hacer cualquier cambio. Si estás de acuerdo, pido el repuesto y lo cambio.</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section class="process" id="proceso">
-  <div class="wrap">
-    <div class="sec-head">
-      <div class="eyebrow">Cómo trabajo</div>
-      <h2>Sin sorpresas en el presupuesto.</h2>
-    </div>
-    <div class="proc-list">
-      <div class="proc-item">
-        <div class="pn">01</div>
-        <h3>Me contás</h3>
-        <p>Mandás el modelo del equipo y qué le pasa por WhatsApp.</p>
-      </div>
-      <div class="proc-item">
-        <div class="pn">02</div>
-        <h3>Diagnóstico</h3>
-        <p>Reviso el equipo y detecto qué necesita.</p>
-      </div>
-      <div class="proc-item">
-        <div class="pn">03</div>
-        <h3>Presupuesto</h3>
-        <p>Te paso el costo antes de comprar cualquier repuesto.</p>
-      </div>
-      <div class="proc-item">
-        <div class="pn">04</div>
-        <h3>Reparación</h3>
-        <p>Trabajo solo con tu autorización, nada extra sin avisar.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section class="faq" id="faq">
-  <div class="wrap">
-    <div class="sec-head">
-      <div class="eyebrow">FAQ</div>
-      <h2>Preguntas frecuentes.</h2>
-      <p>Antes de escribirme, puede que tu duda ya esté acá. Si no, siempre podés preguntarme directo por WhatsApp.</p>
-    </div>
-
-    <div class="faq-grid">
-      <div class="faq-item">
-        <div class="faq-q">¿Cuánto tarda una reparación?</div>
-        <div class="faq-a">Depende del problema y de si hace falta pedir algún repuesto. La mayoría de las limpiezas y mantenimientos los devuelvo en el día o al día siguiente. Si hay que esperar un repuesto, te aviso el tiempo estimado apenas lo confirmo.</div>
-      </div>
-
-      <div class="faq-item">
-        <div class="faq-q">¿El diagnóstico tiene costo?</div>
-        <div class="faq-a">No, el diagnóstico es gratis. Reviso el equipo, te digo qué tiene y cuánto sale arreglarlo, y recién ahí decidís si seguimos con la reparación.</div>
-      </div>
-
-      <div class="faq-item">
-        <div class="faq-q">¿El trabajo tiene garantía?</div>
-        <div class="faq-a">Sí. Si el mismo problema vuelve a aparecer después de la reparación, lo reviso sin cargo con un plazo de 30 dias.</div>
-      </div>
-
-      <div class="faq-item">
-        <div class="faq-q">¿Trabajás con consolas viejas o descontinuadas?</div>
-        <div class="faq-a">Sí, de hecho es lo que más me gusta. PS1, PS2, Nintendo 64, Xbox 360, SEGAs y también notebooks o PCs viejas que ya nadie quiere tocar.</div>
-      </div>
-
-      <div class="faq-item">
-        <div class="faq-q">¿Cómo hago para llevarte el equipo?</div>
-        <div class="faq-a">Coordinamos todo por Facebook o Whatsapp. El retiro y la entrega son en mi domicilio, en Barrio Chacra 13.</div>
-      </div>
-
-      <div class="faq-item">
-        <div class="faq-q">¿Y si el problema no tiene solución?</div>
-        <div class="faq-a">Si después de revisarlo veo que no se puede arreglar, o que no conviene por el costo, te lo digo directamente y no te cobro nada.</div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section id="sobre-mi">
-  <div class="wrap">
-    <div class="about-grid">
-      <div class="about-copy">
-        <div class="eyebrow">Sobre mí</div>
-        <h2 style="margin-top:12px; font-size:clamp(30px,4.8vw,42px); color:var(--ink);">¿Quier soy?</h2>
-        <p>Soy <strong>Thiago Azario</strong>, trabajo independiente desde mi casa reparando consolas, PCs, notebooks y celulares. Compro yo mismo cada repuesto, la pasta térmica y las herramientas que uso.</p>
-        <p>Me apasiona la tecnología, la informática, la electrónica y los videojuegos —sobre todo las consolas retro. Es un laburo que disfruto de verdad, no solo un trabajo.</p>
-      </div>
-
-      <div class="stat-panel">
-        <div class="stat-row"><span class="label">Ubicación</span><span class="value">Barrio Chacra 13</span></div>
-        <div class="stat-row"><span class="label">Mensajes</span><span class="value">A cualquier hora</span></div>
-        <div class="stat-row"><span class="label">Retiro y entrega</span><span class="value">En mi domicilio</span></div>
-        <div class="stat-row"><span class="label">Repuestos</span><span class="value">Se avisan antes</span></div>
-        <div class="stat-row"><span class="label">Contacto</span><span class="value">Facebook - WhatsApp</span></div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section class="clientes" id="clientes">
-  <div class="wrap">
-    <div class="sec-head">
-      <div class="eyebrow">Clientes</div>
-      <h2>Trabajos y equipos que ya pasaron por acá.</h2>
-      <p>Fotos de reparaciones, capturas de conversaciones y equipos entregados. Se va a ir llenando con cada trabajo nuevo.</p>
-    </div>
-
-    <div class="clientes-grid" id="clientes-grid">
-      <!-- Esto se completa solo: no hace falta tocar este HTML nunca más.
-           Con solo subir fotos/trabajo-1.jpeg, fotos/trabajo-2.jpeg, etc.
-           el script de más abajo las va a detectar y mostrar automáticamente. -->
-    </div>
-  </div>
-</section>
-
-<section class="resenas" id="resenas">
-  <div class="wrap">
-    <div class="sec-head">
-      <div class="eyebrow">Reseñas</div>
-      <h2>¿Ya te arreglé algo? Dejá tu reseña.</h2>
-      <p>Puntuá el servicio y contá cómo te fue. Tu reseña queda guardada acá y se publica apenas la reviso.</p>
-    </div>
-
-    <div class="resenas-layout">
-      <div class="resenas-grid" id="resenas-grid">
-        <!-- Se completa desde resenas.js -->
-      </div>
-
-      <form class="resena-form ink-card" id="resena-form">
-        <h3>Dejá la tuya</h3>
-
-        <label class="rf-label" for="resena-nombre">Tu nombre</label>
-        <input class="rf-input" type="text" id="resena-nombre" placeholder="Ej: Thiago" required>
-
-        <label class="rf-label" for="resena-equipo">Qué equipo trajiste a reparar</label>
-        <input class="rf-input" type="text" id="resena-equipo" placeholder="Ej: PS4 Slim, notebook Lenovo, iPhone 11...">
-
-        <label class="rf-label">Puntaje</label>
-        <div class="rf-stars" id="rf-stars" role="radiogroup" aria-label="Puntaje de 1 a 5 estrellas">
-          <button type="button" class="rf-star" data-val="1" aria-label="1 estrella">★</button>
-          <button type="button" class="rf-star" data-val="2" aria-label="2 estrellas">★</button>
-          <button type="button" class="rf-star" data-val="3" aria-label="3 estrellas">★</button>
-          <button type="button" class="rf-star" data-val="4" aria-label="4 estrellas">★</button>
-          <button type="button" class="rf-star" data-val="5" aria-label="5 estrellas">★</button>
-        </div>
-
-        <label class="rf-label" for="resena-texto">Tu reseña</label>
-        <textarea class="rf-input" id="resena-texto" rows="4" placeholder="Contame cómo te fue con la reparación..." required></textarea>
-
-        <label class="rf-label" for="resena-foto">Foto (opcional)</label>
-        <input class="rf-file" type="file" id="resena-foto" accept="image/*">
-        <div class="rf-preview" id="rf-preview"></div>
-
-        <button type="submit" class="btn-primary rf-submit">Publicar reseña →</button>
-        <p class="rf-note">Necesitás iniciar sesión para publicar. La reviso y en poco tiempo aparece publicada acá en la página.</p>
-      </form>
-    </div>
-  </div>
-</section>
-
-<div id="lightbox">
-  <button type="button" class="lb-close" id="lightbox-close" aria-label="Cerrar">✕</button>
-  <img id="lightbox-img" src="" alt="Foto ampliada">
-</div>
-
-<script>
-(function(){
-  var grid = document.getElementById('clientes-grid');
-  if(!grid) return;
-
-  var MAX_FOTOS = 60; // subí este número si en algún momento llegás a tener más de 60 fotos
-
-  function probarFoto(i){
-    return new Promise(function(resolve){
-      var src = 'fotos/trabajo-' + i + '.jpeg';
-      var img = new Image();
-      img.onload = function(){ resolve({ ok:true, src:src, i:i }); };
-      img.onerror = function(){ resolve({ ok:false }); };
-      img.src = src;
+// resenas.js
+// Login/registro + guardado y visualización de reseñas usando Firebase.
+
+import { db, auth } from './firebase-config.js';
+import {
+  collection, addDoc, getDocs, query, where, orderBy, serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import {
+  onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+const grid = document.getElementById('resenas-grid');
+const form = document.getElementById('resena-form');
+const starsWrap = document.getElementById('rf-stars');
+const fotoInput = document.getElementById('resena-foto');
+const preview = document.getElementById('rf-preview');
+
+let puntaje = 0;
+let fotoBase64 = '';
+
+/* ==================== AUTH: nav, modal, login/registro ==================== */
+
+const authArea = document.getElementById('auth-area');
+const authModal = document.getElementById('auth-modal');
+const authForm = document.getElementById('auth-form');
+const authEmail = document.getElementById('auth-email');
+const authPass = document.getElementById('auth-pass');
+const authError = document.getElementById('auth-error');
+const authSubmitBtn = document.getElementById('auth-submit-btn');
+const authModalMsg = document.getElementById('auth-modal-msg');
+const authModalTitle = document.getElementById('auth-modal-title');
+const authTabs = document.querySelectorAll('.modal-tab');
+const authModalClose = document.getElementById('auth-modal-close');
+
+let authMode = 'login';
+
+function actualizarModoModal() {
+  authTabs.forEach(function (t) { t.classList.toggle('active', t.dataset.mode === authMode); });
+  const esLogin = authMode === 'login';
+  authModalTitle.textContent = esLogin ? 'Iniciar sesión' : 'Crear cuenta';
+  authSubmitBtn.textContent = esLogin ? 'Iniciar sesión' : 'Crear cuenta';
+  authPass.setAttribute('autocomplete', esLogin ? 'current-password' : 'new-password');
+}
+
+function abrirAuthModal(mode, mensaje) {
+  authMode = mode || 'login';
+  actualizarModoModal();
+  if (mensaje) {
+    authModalMsg.textContent = mensaje;
+    authModalMsg.style.display = 'block';
+  } else {
+    authModalMsg.style.display = 'none';
+  }
+  authError.style.display = 'none';
+  authModal.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function cerrarAuthModal() {
+  authModal.classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+if (authTabs.length) {
+  authTabs.forEach(function (tab) {
+    tab.addEventListener('click', function () {
+      authMode = tab.dataset.mode;
+      actualizarModoModal();
     });
+  });
+}
+
+if (authModalClose) authModalClose.addEventListener('click', cerrarAuthModal);
+if (authModal) {
+  authModal.addEventListener('click', function (e) {
+    if (e.target === authModal) cerrarAuthModal();
+  });
+}
+document.addEventListener('keydown', function (e) {
+  if (e.key === 'Escape' && authModal && authModal.classList.contains('open')) cerrarAuthModal();
+});
+
+function traducirErrorAuth(code) {
+  switch (code) {
+    case 'auth/email-already-in-use': return 'Ese email ya está registrado. Probá iniciar sesión.';
+    case 'auth/invalid-email': return 'El email no es válido.';
+    case 'auth/weak-password': return 'La contraseña debe tener al menos 6 caracteres.';
+    case 'auth/wrong-password': return 'Contraseña incorrecta.';
+    case 'auth/user-not-found': return 'No existe una cuenta con ese email.';
+    case 'auth/invalid-credential': return 'Email o contraseña incorrectos.';
+    case 'auth/too-many-requests': return 'Demasiados intentos. Probá de nuevo en un rato.';
+    default: return 'Ocurrió un error. Probá de nuevo.';
   }
+}
 
-  var pedidos = [];
-  for (var i = 1; i <= MAX_FOTOS; i++){
-    pedidos.push(probarFoto(i));
-  }
+if (authForm) {
+  authForm.addEventListener('submit', async function (e) {
+    e.preventDefault();
+    authError.style.display = 'none';
+    authSubmitBtn.disabled = true;
 
-  Promise.all(pedidos).then(function(resultados){
-    var encontradas = resultados.filter(function(r){ return r.ok; });
+    const email = authEmail.value.trim();
+    const pass = authPass.value;
 
-    encontradas.forEach(function(r){
-      var tile = document.createElement('div');
-      tile.className = 'cl-tile filled';
-      var el = document.createElement('img');
-      el.src = r.src;
-      el.alt = 'Trabajo ' + r.i;
-      tile.appendChild(el);
-      tile.addEventListener('click', function(){
-        abrirLightbox(r.src, el.alt);
-      });
-      grid.appendChild(tile);
-    });
-
-    if (encontradas.length === 0){
-      grid.innerHTML = '<p style="grid-column:1/-1;font-family:\'Space Mono\',monospace;color:var(--cream-dk);">Todavía no hay fotos cargadas. En cuanto subas la primera van a empezar a aparecer acá.</p>';
+    try {
+      if (authMode === 'login') {
+        await signInWithEmailAndPassword(auth, email, pass);
+      } else {
+        await createUserWithEmailAndPassword(auth, email, pass);
+      }
+      cerrarAuthModal();
+      authForm.reset();
+    } catch (err) {
+      authError.textContent = traducirErrorAuth(err.code);
+      authError.style.display = 'block';
+    } finally {
+      authSubmitBtn.disabled = false;
     }
   });
+}
 
-  // ---- Lightbox: abre la foto en tamaño completo ----
-  var lightbox = document.getElementById('lightbox');
-  var lightboxImg = document.getElementById('lightbox-img');
-  var lightboxClose = document.getElementById('lightbox-close');
+function pintarAuthArea(user) {
+  if (!authArea) return;
 
-  function abrirLightbox(src, alt){
-    if(!lightbox || !lightboxImg) return;
-    lightboxImg.src = src;
-    lightboxImg.alt = alt || 'Foto ampliada';
-    lightbox.classList.add('open');
-    document.body.style.overflow = 'hidden';
-  }
-  function cerrarLightbox(){
-    if(!lightbox) return;
-    lightbox.classList.remove('open');
-    document.body.style.overflow = '';
-  }
-  if(lightboxClose){ lightboxClose.addEventListener('click', cerrarLightbox); }
-  if(lightbox){
-    lightbox.addEventListener('click', function(e){
-      if(e.target === lightbox){ cerrarLightbox(); }
+  if (user) {
+    const nombreCorto = user.email ? user.email.split('@')[0] : 'usuario';
+    authArea.innerHTML =
+      '<span class="auth-hello">Hola, ' + nombreCorto + '</span>' +
+      '<button type="button" class="nav-cta auth-logout" id="btn-logout-nav">Cerrar sesión</button>';
+    document.getElementById('btn-logout-nav').addEventListener('click', function () {
+      signOut(auth);
     });
+  } else {
+    authArea.innerHTML =
+      '<button type="button" class="nav-cta" id="btn-login-nav">Iniciar sesión</button>' +
+      '<button type="button" class="nav-cta auth-register" id="btn-register-nav">Registrarse</button>';
+    document.getElementById('btn-login-nav').addEventListener('click', function () { abrirAuthModal('login'); });
+    document.getElementById('btn-register-nav').addEventListener('click', function () { abrirAuthModal('registro'); });
   }
-  document.addEventListener('keydown', function(e){
-    if(e.key === 'Escape'){ cerrarLightbox(); }
+}
+
+onAuthStateChanged(auth, function (user) {
+  pintarAuthArea(user);
+});
+
+/* ==================== RESEÑAS: estrellas, foto, envío, listado ==================== */
+
+if (starsWrap) {
+  starsWrap.addEventListener('click', function (e) {
+    const btn = e.target.closest('.rf-star');
+    if (!btn) return;
+    puntaje = parseInt(btn.dataset.val, 10);
+    Array.from(starsWrap.children).forEach(function (star) {
+      star.classList.toggle('on', parseInt(star.dataset.val, 10) <= puntaje);
+    });
   });
-})();
-</script>
+}
 
-<section class="contact" id="contacto">
-  <div class="wrap">
-    <div class="eyebrow" style="justify-content:center;">Contacto</div>
-    <h2 style="margin-top:12px;">¿Le pasa algo a tu equipo?</h2>
-    <p class="lead">Contame el modelo y qué le pasa. Con eso te digo qué puede llegar a ser, pero el diagnóstico real lo doy después de revisar el equipo — un mismo síntoma puede tener varias causas.</p>
+// Achico la foto antes de guardarla como base64 (Firestore tiene límite de 1MB por documento).
+if (fotoInput) {
+  fotoInput.addEventListener('change', function () {
+    const file = fotoInput.files[0];
+    preview.innerHTML = '';
+    fotoBase64 = '';
+    if (!file) return;
 
-    <div class="contact-details">
-      <div class="cd-item">
-        <div class="cd-label">WhatsApp</div>
-        <div class="cd-value">+54 9 2964 57-4506</div>
-      </div>
-      <div class="cd-item">
-        <div class="cd-label">Zona</div>
-        <div class="cd-value">Barrio Chacra 13</div>
-      </div>
-      <div class="cd-item">
-        <div class="cd-label">Mensajes</div>
-        <div class="cd-value">A cualquier hora</div>
-      </div>
-    </div>
+    const reader = new FileReader();
+    reader.onload = function (ev) {
+      const img = new Image();
+      img.onload = function () {
+        const maxSize = 500;
+        let w = img.width, h = img.height;
+        if (w > h && w > maxSize) { h = Math.round(h * maxSize / w); w = maxSize; }
+        else if (h >= w && h > maxSize) { w = Math.round(w * maxSize / h); h = maxSize; }
 
-    <div class="big-cta">
-      <a class="whatsapp-btn" href="https://wa.me/5492964574506?text=Hola%20AZ%20TECH!%20Quiero%20consultar%20por%20un%20servicio." target="_blank" rel="noopener">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2c-5.5 0-9.96 4.46-9.96 9.96 0 1.76.46 3.42 1.27 4.85L2 22l5.32-1.32a9.9 9.9 0 0 0 4.72 1.2h.01c5.5 0 9.96-4.46 9.96-9.96S17.55 2 12.04 2zm5.8 14.2c-.24.68-1.4 1.3-1.94 1.38-.5.08-1.12.11-1.8-.11-.42-.13-.96-.31-1.65-.6-2.9-1.25-4.8-4.15-4.94-4.35-.14-.2-1.18-1.57-1.18-3 0-1.42.75-2.12 1.02-2.41.27-.29.58-.36.78-.36.2 0 .4 0 .57.01.18.01.43-.07.67.51.24.6.83 2.06.9 2.21.07.15.12.33.02.53-.1.2-.15.32-.3.5-.15.18-.31.4-.44.53-.15.15-.3.31-.13.6.17.3.76 1.25 1.63 2.03 1.12 1 2.06 1.31 2.36 1.46.3.15.47.13.65-.08.18-.2.75-.87.95-1.17.2-.3.4-.25.66-.15.27.1 1.72.81 2.02.96.3.15.5.22.57.35.07.13.07.75-.17 1.43z"/></svg>
-        Escribir ahora
-      </a>
-      <a class="facebook-btn" href="https://www.facebook.com/profile.php?id=61572183662180" target="_blank" rel="noopener">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M22 12.06C22 6.5 17.52 2 12 2S2 6.5 2 12.06c0 5.02 3.66 9.18 8.44 9.94v-7.03H7.9v-2.91h2.54V9.83c0-2.51 1.49-3.89 3.77-3.89 1.09 0 2.24.2 2.24.2v2.47h-1.26c-1.24 0-1.63.78-1.63 1.58v1.9h2.78l-.44 2.91h-2.34V22c4.78-.76 8.44-4.92 8.44-9.94z"/></svg>
-        Seguime en Facebook
-      </a>
-    </div>
-  </div>
-</section>
+        const canvas = document.createElement('canvas');
+        canvas.width = w; canvas.height = h;
+        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+        fotoBase64 = canvas.toDataURL('image/jpeg', 0.7);
 
-<footer>
-  <div class="foot-wrap">
-    <div class="brand"><span class="badge-dot"></span> AZ TECH</div>
-    <div class="fine">© 2026 AZ TECH — Service técnico independiente.</div>
-  </div>
-</footer>
-
-<script>
-(function(){
-  var splash = document.getElementById('intro-splash');
-  if(!splash) return;
-
-  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  if(reduce){
-    splash.remove();
-    return;
-  }
-
-  function cerrarYa(){
-    splash.classList.add('skip-now');
-    setTimeout(function(){ splash.remove(); }, 400);
-  }
-
-  // click en cualquier parte del fondo naranja cierra la intro al toque
-  splash.addEventListener('click', function(e){
-    if(e.target === splash){ cerrarYa(); }
+        const p = document.createElement('img');
+        p.src = fotoBase64;
+        preview.appendChild(p);
+      };
+      img.src = ev.target.result;
+    };
+    reader.readAsDataURL(file);
   });
+}
 
-  // saca el overlay del DOM una vez terminó la animación de salida
-  setTimeout(function(){
-    if(splash && splash.parentNode){ splash.remove(); }
-  }, 1600);
-})();
-</script>
+if (form) {
+  form.addEventListener('submit', async function (e) {
+    e.preventDefault();
 
-<div class="modal-overlay" id="auth-modal">
-  <div class="modal-box ink-card">
-    <button type="button" class="modal-close" id="auth-modal-close" aria-label="Cerrar">✕</button>
-    <div class="modal-tabs">
-      <button type="button" class="modal-tab active" data-mode="login">Iniciar sesión</button>
-      <button type="button" class="modal-tab" data-mode="registro">Registrarse</button>
-    </div>
-    <h3 id="auth-modal-title">Iniciar sesión</h3>
-    <p class="modal-msg" id="auth-modal-msg"></p>
-    <form id="auth-form">
-      <div id="auth-username-field" style="display:none;">
-        <label class="rf-label" for="auth-username">Nombre de usuario</label>
-        <input class="rf-input" type="text" id="auth-username" autocomplete="nickname">
-      </div>
-      <label class="rf-label" for="auth-email">Email</label>
-      <input class="rf-input" type="email" id="auth-email" required autocomplete="email">
-      <label class="rf-label" for="auth-pass">Contraseña</label>
-      <input class="rf-input" type="password" id="auth-pass" required minlength="6" autocomplete="current-password">
-      <button type="submit" class="btn-primary" id="auth-submit-btn" style="width:100%; justify-content:center; margin-top:18px;">Iniciar sesión</button>
-      <p class="auth-error" id="auth-error"></p>
-    </form>
-  </div>
-</div>
+    if (!auth.currentUser) {
+      abrirAuthModal('login', 'Iniciá sesión o registrate para poder publicar tu reseña.');
+      return;
+    }
 
-<script type="module" src="firebase-config.js"></script>
-<script type="module" src="resenas.js"></script>
+    const nombre = document.getElementById('resena-nombre').value.trim();
+    const equipo = document.getElementById('resena-equipo').value.trim();
+    const texto = document.getElementById('resena-texto').value.trim();
 
-</body>
-</html>
+    if (!nombre || !texto || puntaje === 0) {
+      alert('Completá tu nombre, la reseña y elegí un puntaje de estrellas.');
+      return;
+    }
+
+    const submitBtn = form.querySelector('.rf-submit');
+    const textoOriginal = submitBtn.textContent;
+    submitBtn.textContent = 'Guardando...';
+    submitBtn.disabled = true;
+
+    try {
+      await addDoc(collection(db, 'resenas'), {
+        nombre: nombre,
+        equipo: equipo || null,
+        texto: texto,
+        puntaje: puntaje,
+        foto: fotoBase64 || null,
+        autorUid: auth.currentUser.uid,
+        autorEmail: auth.currentUser.email,
+        autorUsuario: username,
+        aprobada: false, // se publica recién cuando vos la apruebes
+        creada: serverTimestamp()
+        autorEmail: auth.currentUser.email,
+        autorUid: auth.currentUser.uid,
+      });
+
+      form.reset();
+      preview.innerHTML = '';
+      fotoBase64 = '';
+      puntaje = 0;
+      Array.from(starsWrap.children).forEach(function (star) { star.classList.remove('on'); });
+
+      alert('¡Gracias! Tu reseña quedó guardada y se va a publicar apenas la revise.');
+    } catch (err) {
+      console.error(err);
+      alert('Hubo un error al guardar tu reseña. Probá de nuevo en un rato.');
+    } finally {
+      submitBtn.textContent = textoOriginal;
+      submitBtn.disabled = false;
+    }
+  });
+}
+
+function escapeHTML(str) {
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+async function cargarResenas() {
+  if (!grid) return;
+
+  try {
+    const q = query(
+      collection(db, 'resenas'),
+      where('aprobada', '==', true),
+      orderBy('creada', 'desc')
+    );
+    const snap = await getDocs(q);
+
+    if (snap.empty) {
+      grid.innerHTML = '<p class="resenas-empty">Todavía no hay reseñas publicadas. ¡Sé el primero en dejar la tuya!</p>';
+      return;
+    }
+
+    grid.innerHTML = '';
+    snap.forEach(function (docSnap) {
+      const r = docSnap.data();
+      const card = document.createElement('div');
+      card.className = 'resena-card';
+
+      const estrellas = Array.from({ length: 5 }, function (_, i) {
+        return '<span class="' + (i < r.puntaje ? 'on' : '') + '">★</span>';
+      }).join('');
+
+      card.innerHTML =
+        '<div class="rc-top">' +
+          '<span class="rc-name">' + escapeHTML(r.nombre) + (r.equipo ? ' · ' + escapeHTML(r.equipo) : '') + '</span>' +
+          '<span class="rc-stars">' + estrellas + '</span>' +
+        '</div>' +
+        '<p class="rc-text">' + escapeHTML(r.texto) + '</p>' +
+        (r.foto ? '<img class="rc-photo" src="' + r.foto + '" alt="Foto de ' + escapeHTML(r.nombre) + '">' : '');
+
+      const fotoEl = card.querySelector('.rc-photo');
+      if (fotoEl) {
+        fotoEl.addEventListener('click', function () {
+          const lightbox = document.getElementById('lightbox');
+          const lightboxImg = document.getElementById('lightbox-img');
+          if (lightbox && lightboxImg) {
+            lightboxImg.src = r.foto;
+            lightbox.classList.add('open');
+            document.body.style.overflow = 'hidden';
+          }
+        });
+      }
+
+      grid.appendChild(card);
+    });
+  } catch (err) {
+    console.error(err);
+    grid.innerHTML = '<p class="resenas-empty">No se pudieron cargar las reseñas ahora. Probá recargar la página.</p>';
+  }
+}
+
+cargarResenas();
