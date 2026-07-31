@@ -123,6 +123,7 @@ function pintarAuthArea(user) {
   if (!authArea) return;
 
   if (user) {
+    console.log(auth.currentUser);
     const nombreCorto = datosUsuario.username || user.email.split('@')[0];
     authArea.innerHTML =
       '<span class="auth-hello">Hola, ' + nombreCorto + '</span>' +
