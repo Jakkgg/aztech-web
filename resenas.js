@@ -1,11 +1,13 @@
 // resenas.js
-// Guarda reseñas nuevas en Firestore y muestra las que ya fueron aprobadas.
-// Requiere que firebase-config.js se haya cargado antes (ver index.html).
+// Login/registro + guardado y visualización de reseñas usando Firebase.
 
-import { db } from './firebase-config.js';
+import { db, auth } from './firebase-config.js';
 import {
   collection, addDoc, getDocs, query, where, orderBy, serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import {
+  onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 const grid = document.getElementById('resenas-grid');
 const form = document.getElementById('resena-form');
@@ -16,7 +18,133 @@ const preview = document.getElementById('rf-preview');
 let puntaje = 0;
 let fotoBase64 = '';
 
-// ---------- Estrellas ----------
+/* ==================== AUTH: nav, modal, login/registro ==================== */
+
+const authArea = document.getElementById('auth-area');
+const authModal = document.getElementById('auth-modal');
+const authForm = document.getElementById('auth-form');
+const authEmail = document.getElementById('auth-email');
+const authPass = document.getElementById('auth-pass');
+const authError = document.getElementById('auth-error');
+const authSubmitBtn = document.getElementById('auth-submit-btn');
+const authModalMsg = document.getElementById('auth-modal-msg');
+const authModalTitle = document.getElementById('auth-modal-title');
+const authTabs = document.querySelectorAll('.modal-tab');
+const authModalClose = document.getElementById('auth-modal-close');
+
+let authMode = 'login';
+
+function actualizarModoModal() {
+  authTabs.forEach(function (t) { t.classList.toggle('active', t.dataset.mode === authMode); });
+  const esLogin = authMode === 'login';
+  authModalTitle.textContent = esLogin ? 'Iniciar sesión' : 'Crear cuenta';
+  authSubmitBtn.textContent = esLogin ? 'Iniciar sesión' : 'Crear cuenta';
+  authPass.setAttribute('autocomplete', esLogin ? 'current-password' : 'new-password');
+}
+
+function abrirAuthModal(mode, mensaje) {
+  authMode = mode || 'login';
+  actualizarModoModal();
+  if (mensaje) {
+    authModalMsg.textContent = mensaje;
+    authModalMsg.style.display = 'block';
+  } else {
+    authModalMsg.style.display = 'none';
+  }
+  authError.style.display = 'none';
+  authModal.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function cerrarAuthModal() {
+  authModal.classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+if (authTabs.length) {
+  authTabs.forEach(function (tab) {
+    tab.addEventListener('click', function () {
+      authMode = tab.dataset.mode;
+      actualizarModoModal();
+    });
+  });
+}
+
+if (authModalClose) authModalClose.addEventListener('click', cerrarAuthModal);
+if (authModal) {
+  authModal.addEventListener('click', function (e) {
+    if (e.target === authModal) cerrarAuthModal();
+  });
+}
+document.addEventListener('keydown', function (e) {
+  if (e.key === 'Escape' && authModal && authModal.classList.contains('open')) cerrarAuthModal();
+});
+
+function traducirErrorAuth(code) {
+  switch (code) {
+    case 'auth/email-already-in-use': return 'Ese email ya está registrado. Probá iniciar sesión.';
+    case 'auth/invalid-email': return 'El email no es válido.';
+    case 'auth/weak-password': return 'La contraseña debe tener al menos 6 caracteres.';
+    case 'auth/wrong-password': return 'Contraseña incorrecta.';
+    case 'auth/user-not-found': return 'No existe una cuenta con ese email.';
+    case 'auth/invalid-credential': return 'Email o contraseña incorrectos.';
+    case 'auth/too-many-requests': return 'Demasiados intentos. Probá de nuevo en un rato.';
+    default: return 'Ocurrió un error. Probá de nuevo.';
+  }
+}
+
+if (authForm) {
+  authForm.addEventListener('submit', async function (e) {
+    e.preventDefault();
+    authError.style.display = 'none';
+    authSubmitBtn.disabled = true;
+
+    const email = authEmail.value.trim();
+    const pass = authPass.value;
+
+    try {
+      if (authMode === 'login') {
+        await signInWithEmailAndPassword(auth, email, pass);
+      } else {
+        await createUserWithEmailAndPassword(auth, email, pass);
+      }
+      cerrarAuthModal();
+      authForm.reset();
+    } catch (err) {
+      authError.textContent = traducirErrorAuth(err.code);
+      authError.style.display = 'block';
+    } finally {
+      authSubmitBtn.disabled = false;
+    }
+  });
+}
+
+function pintarAuthArea(user) {
+  if (!authArea) return;
+
+  if (user) {
+    const nombreCorto = user.email ? user.email.split('@')[0] : 'usuario';
+    authArea.innerHTML =
+      '<span class="auth-hello">Hola, ' + nombreCorto + '</span>' +
+      '<button type="button" class="nav-cta auth-logout" id="btn-logout-nav">Cerrar sesión</button>';
+    document.getElementById('btn-logout-nav').addEventListener('click', function () {
+      signOut(auth);
+    });
+  } else {
+    authArea.innerHTML =
+      '<button type="button" class="nav-cta" id="btn-login-nav">Iniciar sesión</button>' +
+      '<button type="button" class="nav-cta auth-register" id="btn-register-nav">Registrarse</button>';
+    document.getElementById('btn-login-nav').addEventListener('click', function () { abrirAuthModal('login'); });
+    document.getElementById('btn-register-nav').addEventListener('click', function () { abrirAuthModal('registro'); });
+  }
+}
+
+onAuthStateChanged(auth, function (user) {
+  pintarAuthArea(user);
+});
+
+/* ==================== RESEÑAS: estrellas, foto, envío, listado ==================== */
+
 if (starsWrap) {
   starsWrap.addEventListener('click', function (e) {
     const btn = e.target.closest('.rf-star');
@@ -28,10 +156,7 @@ if (starsWrap) {
   });
 }
 
-// ---------- Preview + achicado de la foto ----------
-// Firestore no guarda archivos, así que la foto se guarda como texto (base64)
-// dentro del mismo documento. Por eso la achicamos antes: si no, un documento
-// puede superar el límite de 1MB que permite Firestore por documento.
+// Achico la foto antes de guardarla como base64 (Firestore tiene límite de 1MB por documento).
 if (fotoInput) {
   fotoInput.addEventListener('change', function () {
     const file = fotoInput.files[0];
@@ -63,10 +188,14 @@ if (fotoInput) {
   });
 }
 
-// ---------- Envío del formulario ----------
 if (form) {
   form.addEventListener('submit', async function (e) {
     e.preventDefault();
+
+    if (!auth.currentUser) {
+      abrirAuthModal('login', 'Iniciá sesión o registrate para poder publicar tu reseña.');
+      return;
+    }
 
     const nombre = document.getElementById('resena-nombre').value.trim();
     const equipo = document.getElementById('resena-equipo').value.trim();
@@ -89,7 +218,9 @@ if (form) {
         texto: texto,
         puntaje: puntaje,
         foto: fotoBase64 || null,
-        aprobada: false, // se publica recién cuando vos la apruebes desde Firebase
+        autorUid: auth.currentUser.uid,
+        autorEmail: auth.currentUser.email,
+        aprobada: false, // se publica recién cuando vos la apruebes
         creada: serverTimestamp()
       });
 
@@ -110,7 +241,6 @@ if (form) {
   });
 }
 
-// ---------- Carga de reseñas aprobadas ----------
 function escapeHTML(str) {
   const div = document.createElement('div');
   div.textContent = str;
