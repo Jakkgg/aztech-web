@@ -6,7 +6,7 @@ import {
   collection, addDoc, getDocs, query, where, orderBy, serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import {
-  onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut
+  onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, updateProfile
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 const grid = document.getElementById('resenas-grid');
@@ -23,6 +23,7 @@ let fotoBase64 = '';
 const authArea = document.getElementById('auth-area');
 const authModal = document.getElementById('auth-modal');
 const authForm = document.getElementById('auth-form');
+const authUsername = document.getElementById('auth-username');
 const authEmail = document.getElementById('auth-email');
 const authPass = document.getElementById('auth-pass');
 const authError = document.getElementById('auth-error');
@@ -106,7 +107,18 @@ if (authForm) {
       if (authMode === 'login') {
         await signInWithEmailAndPassword(auth, email, pass);
       } else {
-        await createUserWithEmailAndPassword(auth, email, pass);
+        const cred = await createUserWithEmailAndPassword(auth, email, pass);
+
+        // Le ponemos el nombre de usuario elegido en el form de registro.
+        // Sin esto, Firebase deja displayName en null.
+        const nombreElegido = authUsername ? authUsername.value.trim() : '';
+        if (nombreElegido) {
+          await updateProfile(cred.user, { displayName: nombreElegido });
+        }
+
+        // onAuthStateChanged ya se disparó antes de que termine el updateProfile,
+        // así que forzamos un repintado con el nombre ya actualizado.
+        pintarAuthArea(auth.currentUser);
       }
       cerrarAuthModal();
       authForm.reset();
