@@ -140,8 +140,9 @@ function pintarAuthArea(user) {
   if (user) {
     console.log(auth.currentUser);
     const nombreCorto = user.displayName || user.email.split('@')[0];
+    const inicial = nombreCorto.charAt(0).toUpperCase();
     authArea.innerHTML =
-      '<span class="auth-hello">Hola, ' + nombreCorto + '</span>' +
+      '<span class="auth-hello"><span class="auth-avatar">' + inicial + '</span><span class="auth-hello-text">Hola, ' + nombreCorto + '</span></span>' +
       '<button type="button" class="nav-cta auth-logout" id="btn-logout-nav">Cerrar sesión</button>';
     document.getElementById('btn-logout-nav').addEventListener('click', function () {
       signOut(auth);
