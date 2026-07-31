@@ -176,8 +176,8 @@
     border-bottom:3px solid var(--ink);
   }
   nav{
-    max-width:1120px; margin:0 auto; padding:16px 24px;
-    display:flex; align-items:center; justify-content:space-between;
+    max-width:1200px; margin:0 auto; padding:16px 24px;
+    display:grid; grid-template-columns:auto 1fr auto; align-items:center; gap:20px;
   }
   .brand{
     font-family:'Bangers', cursive;
@@ -205,6 +205,7 @@
   }
   .navlinks{
     display:flex; gap:26px;
+    justify-content:center;
     font-family:'Space Mono', monospace;
     font-weight:700;
     font-size:12px; letter-spacing:0.1em; text-transform:uppercase;
@@ -213,7 +214,7 @@
   .navlinks a{transition:color .15s;}
   .navlinks a:hover{color:var(--orange);}
   .nav-ctas{
-    display:flex; align-items:center; gap:10px;
+    display:flex; align-items:center; gap:10px; flex-wrap:wrap; justify-content:flex-end;
   }
   .nav-cta{
     font-family:'Space Mono', monospace;
@@ -905,12 +906,12 @@
         <button type="button" class="nav-cta" id="btn-login-nav">Iniciar sesión</button>
         <button type="button" class="nav-cta auth-register" id="btn-register-nav">Registrarse</button>
       </div>
+      <a class="nav-cta" href="https://wa.me/5492964574506?text=Hola%20AZ%20TECH!%20Quiero%20consultar%20por%20un%20servicio." target="_blank" rel="noopener">
+        <span class="txt">WhatsApp</span>
+      </a>
       <a class="nav-cta fb" href="https://www.facebook.com/profile.php?id=61572183662180" target="_blank" rel="noopener" aria-label="AZ TECH en Facebook">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M22 12.06C22 6.5 17.52 2 12 2S2 6.5 2 12.06c0 5.02 3.66 9.18 8.44 9.94v-7.03H7.9v-2.91h2.54V9.83c0-2.51 1.49-3.89 3.77-3.89 1.09 0 2.24.2 2.24.2v2.47h-1.26c-1.24 0-1.63.78-1.63 1.58v1.9h2.78l-.44 2.91h-2.34V22c4.78-.76 8.44-4.92 8.44-9.94z"/></svg>
         <span class="txt">Facebook</span>
-      </a>
-      <a class="nav-cta" href="https://wa.me/5492964574506?text=Hola%20AZ%20TECH!%20Quiero%20consultar%20por%20un%20servicio." target="_blank" rel="noopener">
-        <span class="txt">WhatsApp</span>
       </a>
     </div>
   </nav>
@@ -1369,6 +1370,10 @@
     <h3 id="auth-modal-title">Iniciar sesión</h3>
     <p class="modal-msg" id="auth-modal-msg"></p>
     <form id="auth-form">
+      <div id="auth-username-field" style="display:none;">
+        <label class="rf-label" for="auth-username">Nombre de usuario</label>
+        <input class="rf-input" type="text" id="auth-username" autocomplete="nickname">
+      </div>
       <label class="rf-label" for="auth-email">Email</label>
       <input class="rf-input" type="email" id="auth-email" required autocomplete="email">
       <label class="rf-label" for="auth-pass">Contraseña</label>
