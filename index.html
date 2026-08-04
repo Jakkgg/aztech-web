@@ -22,7 +22,7 @@
 <meta name="twitter:description" content="Reparación de consolas, PCs, notebooks y celulares. Diagnóstico gratis, sin sorpresas en el presupuesto.">
 <meta name="twitter:image" content="https://jakkgg.github.io/aztech-web/favicon.png">
 
-<link rel="icon" type="image/svg+xml" href="logo.svg">
+<link rel="icon" type="image/png" href="logo.png">
 <link rel="icon" type="image/png" href="favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -843,30 +843,14 @@
   footer .fine{font-family:'Space Mono', monospace; font-size:11.5px; color:var(--cream-dk); letter-spacing:0.03em;}
 
   /* ---------- AUTH (login / registro) ---------- */
-  .auth-area{ display:flex; align-items:center; gap:10px; }
+  .auth-area{ display:flex; align-items:center; gap:8px; }
   .auth-hello{
-    display:flex; align-items:center; gap:8px;
-    font-family:'Space Mono', monospace; font-weight:700; font-size:11.5px;
-    letter-spacing:0.04em; text-transform:uppercase; color:var(--ink);
+    font-family:'Space Mono', monospace; font-weight:700; font-size:11px;
+    letter-spacing:0.04em; text-transform:uppercase; color:var(--ink-soft);
     white-space:nowrap;
-    background:var(--cream-lt);
-    border:2.5px solid var(--ink);
-    box-shadow:3px 3px 0 var(--ink);
-    padding:6px 14px 6px 6px;
-  }
-  .auth-avatar{
-    width:22px; height:22px; border-radius:50%;
-    background:var(--orange);
-    border:2px solid var(--ink);
-    display:flex; align-items:center; justify-content:center;
-    font-family:'Bangers', cursive;
-    font-size:13px;
-    color:var(--cream-lt);
-    flex-shrink:0;
   }
   .nav-cta.auth-register{ background:var(--orange); }
-  .nav-cta.auth-logout{ background:var(--orange-dk); }
-  @media (max-width:600px){ .auth-hello span.auth-hello-text{display:none;} }
+  .nav-cta.auth-logout{ background:var(--ink); }
 
   .modal-overlay{
     position:fixed; inset:0; z-index:3000;
@@ -902,12 +886,12 @@
 
 <div id="intro-splash" role="presentation" aria-hidden="true">
   <div class="spin-bg"></div>
-  <img src="logo.svg" alt="" class="intro-logo">
+  <img src="logo.png" alt="" class="intro-logo">
 </div>
 
 <header>
   <nav class="wrap">
-    <a class="brand" href="#" aria-label="Ir al inicio"><img src="logo.svg" class="brand-logo" alt="AZ TECH"></a>
+    <a class="brand" href="#" aria-label="Ir al inicio"><img src="logo.png" class="brand-logo" alt="AZ TECH"></a>
     <div class="navlinks">
       <a href="#servicios">Servicios</a>
       <a href="#detalle">En detalle</a>
@@ -923,10 +907,7 @@
         <button type="button" class="nav-cta auth-register" id="btn-register-nav">Registrarse</button>
       </div>
       <a class="nav-cta" href="https://wa.me/5492964574506?text=Hola%20AZ%20TECH!%20Quiero%20consultar%20por%20un%20servicio." target="_blank" rel="noopener">
-        <svg width="16" height="16" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true">
-        <path d="M19.11 17.21c-.29-.15-1.7-.84-1.97-.93-.26-.1-.45-.15-.64.15-.19.29-.74.93-.91 1.12-.17.19-.34.22-.63.07-.29-.15-1.24-.46-2.36-1.48-.87-.78-1.46-1.74-1.63-2.03-.17-.29-.02-.45.13-.6.13-.13.29-.34.43-.51.15-.17.19-.29.29-.49.1-.19.05-.37-.02-.51-.07-.15-.64-1.55-.88-2.12-.23-.55-.47-.47-.64-.48h-.55c-.19 0-.51.07-.78.37-.26.29-1.02.99-1.02 2.42s1.04 2.82 1.19 3.02c.15.19 2.04 3.12 4.95 4.37.69.3 1.23.48 1.65.61.69.22 1.31.19 1.81.12.55-.08 1.7-.69 1.94-1.36.24-.67.24-1.25.17-1.36-.07-.12-.26-.19-.55-.34z"/>
-        <path d="M16.02 3C8.84 3 3 8.73 3 15.8c0 2.27.61 4.49 1.77 6.43L3 29l6.98-1.81A13.1 13.1 0 0 0 16.02 28C23.2 28 29 22.27 29 15.2S23.2 3 16.02 3zm0 22.6c-1.88 0-3.72-.5-5.33-1.44l-.38-.22-4.14 1.07 1.11-4.01-.25-.41a10.3 10.3 0 0 1-1.58-5.39c0-5.73 4.73-10.39 10.56-10.39 5.82 0 10.56 4.66 10.56 10.39S21.84 25.6 16.02 25.6z"/>
-    </svg>
+        <span class="txt">WhatsApp</span>
       </a>
       <a class="nav-cta fb" href="https://www.facebook.com/profile.php?id=61572183662180" target="_blank" rel="noopener" aria-label="AZ TECH en Facebook">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M22 12.06C22 6.5 17.52 2 12 2S2 6.5 2 12.06c0 5.02 3.66 9.18 8.44 9.94v-7.03H7.9v-2.91h2.54V9.83c0-2.51 1.49-3.89 3.77-3.89 1.09 0 2.24.2 2.24.2v2.47h-1.26c-1.24 0-1.63.78-1.63 1.58v1.9h2.78l-.44 2.91h-2.34V22c4.78-.76 8.44-4.92 8.44-9.94z"/></svg>
@@ -1156,7 +1137,7 @@
     <div class="about-grid">
       <div class="about-copy">
         <div class="eyebrow">Sobre mí</div>
-        <h2 style="margin-top:12px; font-size:clamp(30px,4.8vw,42px); color:var(--ink);">¿Quier soy?</h2>
+        <h2 style="margin-top:12px; font-size:clamp(30px,4.8vw,42px); color:var(--ink);">¿Quien soy?</h2>
         <p>Soy <strong>Thiago Azario</strong>, trabajo independiente desde mi casa reparando consolas, PCs, notebooks y celulares. Compro yo mismo cada repuesto, la pasta térmica y las herramientas que uso.</p>
         <p>Me apasiona la tecnología, la informática, la electrónica y los videojuegos —sobre todo las consolas retro. Es un laburo que disfruto de verdad, no solo un trabajo.</p>
       </div>
@@ -1389,7 +1370,7 @@
     <h3 id="auth-modal-title">Iniciar sesión</h3>
     <p class="modal-msg" id="auth-modal-msg"></p>
     <form id="auth-form">
-      <div id="auth-username-wrap">
+      <div id="auth-username-field" style="display:none;">
         <label class="rf-label" for="auth-username">Nombre de usuario</label>
         <input class="rf-input" type="text" id="auth-username" autocomplete="nickname">
       </div>
