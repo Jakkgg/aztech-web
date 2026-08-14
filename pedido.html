@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pedir presupuesto — AZ TECH</title>
+<meta name="description" content="Armá tu pedido: elegí el servicio, contanos qué le pasa a tu equipo y mirá el presupuesto estimado al instante.">
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bangers&family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cream:#DCC9A9;
+    --cream-lt:#EDE0C8;
+    --cream-dk:#C9B48D;
+    --ink:#1B1712;
+    --ink-soft:#3A3226;
+    --orange:#D9782F;
+    --orange-dk:#A85A20;
+    --green:#4E6851;
+    --green-dk:#354A39;
+    --paper:#F1E6D2;
+    --fb-blue:#1877F2;
+  }
+
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+
+  body{
+    background:var(--cream);
+    color:var(--ink);
+    font-family:'Space Grotesk', sans-serif;
+    font-weight:500;
+    position:relative;
+    overflow-x:hidden;
+  }
+
+  body::before{
+    content:"";
+    position:fixed; inset:0;
+    background-image: radial-gradient(var(--ink) 1px, transparent 1.2px);
+    background-size: 5px 5px;
+    opacity:0.05;
+    pointer-events:none;
+    z-index:400;
+  }
+
+  a{color:inherit; text-decoration:none;}
+  ul{list-style:none;}
+
+  .wrap{max-width:1120px; margin:0 auto; padding:0 24px;}
+
+  .eyebrow{
+    font-family:'Space Mono', monospace;
+    font-weight:700;
+    font-size:12px;
+    letter-spacing:0.28em;
+    text-transform:uppercase;
+    color:var(--orange);
+    display:flex; align-items:center; gap:10px;
+  }
+  .eyebrow::before{content:"●"; font-size:8px; color:var(--orange);}
+
+  h1,h2,h3{
+    font-family:'Bangers', cursive;
+    font-weight:400;
+    letter-spacing:0.02em;
+  }
+
+  .ink-card{
+    border:3px solid var(--ink);
+    box-shadow:7px 7px 0 var(--ink);
+    background:var(--paper);
+  }
+
+  /* ---------- NAV (idéntico al de index) ---------- */
+  header{
+    position:sticky; top:0; z-index:100;
+    background:var(--cream);
+    border-bottom:3px solid var(--ink);
+  }
+  nav{
+    max-width:1200px; margin:0 auto; padding:16px 24px;
+    display:grid; grid-template-columns:auto 1fr auto; align-items:center; gap:20px;
+  }
+  .brand{
+    font-family:'Bangers', cursive;
+    font-size:26px;
+    letter-spacing:0.04em;
+    color:var(--ink);
+    display:flex; align-items:center; gap:10px;
+  }
+  .brand-logo{ height:46px; width:auto; display:block; transition:transform .25s ease; }
+  .brand:hover .brand-logo{ transform:scale(1.08) rotate(-4deg); }
+  .navlinks{
+    display:flex; gap:26px; justify-content:center;
+    font-family:'Space Mono', monospace; font-weight:700;
+    font-size:12px; letter-spacing:0.1em; text-transform:uppercase;
+    color:var(--ink-soft);
+  }
+  .navlinks a{transition:color .15s;}
+  .navlinks a:hover, .navlinks a.current{color:var(--orange);}
+  .nav-ctas{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; justify-content:flex-end; }
+  .nav-cta{
+    font-family:'Space Mono', monospace; font-weight:700; font-size:12px;
+    letter-spacing:0.06em; text-transform:uppercase;
+    padding:9px 18px; background:var(--green); color:var(--cream-lt);
+    border:2.5px solid var(--ink); box-shadow:3px 3px 0 var(--ink);
+    transition:transform .12s, box-shadow .12s;
+    display:inline-flex; align-items:center; gap:7px;
+  }
+  .nav-cta:hover{transform:translate(-2px,-2px); box-shadow:5px 5px 0 var(--ink);}
+  .nav-cta.fb{ background:var(--fb-blue); }
+  .nav-cta.ig{ background:linear-gradient(45deg, #F58529, #DD2A7B, #8134AF, #515BD4); }
+  @media (max-width:760px){ .navlinks{display:none;} }
+  @media (max-width:480px){ .nav-cta span.txt{display:none;} .nav-cta{padding:9px 12px;} }
+
+  /* ---------- HERO chica ---------- */
+  .pedido-hero{
+    padding:56px 0 40px;
+    text-align:center;
+    background:
+      radial-gradient(circle at 12% 20%, rgba(217,120,47,.12), transparent 40%),
+      radial-gradient(circle at 88% 75%, rgba(78,104,81,.14), transparent 45%),
+      var(--cream);
+  }
+  .pedido-hero .hero-sticker{
+    display:inline-block;
+    font-family:'Space Mono', monospace; font-weight:700; font-size:12px;
+    letter-spacing:0.14em; text-transform:uppercase;
+    background:var(--orange); color:var(--cream-lt);
+    padding:9px 18px; border:2.5px solid var(--ink); box-shadow:4px 4px 0 var(--ink);
+    transform:rotate(-3deg); margin-bottom:20px;
+  }
+  .pedido-hero h1{
+    font-size:clamp(38px, 7vw, 68px); color:var(--orange);
+    -webkit-text-stroke:2px var(--ink); text-shadow:5px 5px 0 var(--ink-soft);
+  }
+  .pedido-hero p{
+    max-width:560px; margin:20px auto 0; font-size:17px; color:var(--ink-soft); line-height:1.6;
+  }
+
+  /* ---------- FORM LAYOUT ---------- */
+  .pedido-main{ padding:20px 0 100px; }
+  .pedido-grid{
+    display:grid;
+    grid-template-columns:1.3fr 0.9fr;
+    gap:36px;
+    align-items:start;
+  }
+  @media (max-width:940px){ .pedido-grid{grid-template-columns:1fr;} }
+
+  .form-panel{ padding:32px; }
+  .form-section{ margin-bottom:34px; }
+  .form-section:last-child{ margin-bottom:0; }
+  .form-section h2{
+    font-size:24px; color:var(--ink); margin-bottom:6px;
+  }
+  .form-section .fs-sub{
+    font-size:13.5px; color:var(--ink-soft); margin-bottom:16px; line-height:1.5;
+  }
+  .fs-num{
+    display:inline-flex; align-items:center; justify-content:center;
+    width:26px; height:26px; border-radius:50%;
+    background:var(--orange); color:var(--cream-lt);
+    font-family:'Space Mono', monospace; font-weight:700; font-size:13px;
+    margin-right:8px; vertical-align:middle;
+  }
+
+  .rf-label{
+    display:block; font-family:'Space Mono', monospace; font-weight:700;
+    font-size:11.5px; letter-spacing:0.08em; text-transform:uppercase;
+    color:var(--ink-soft); margin:16px 0 6px;
+  }
+  .rf-label:first-of-type{ margin-top:0; }
+  .rf-input, select.rf-input{
+    width:100%; font-family:'Space Grotesk', sans-serif; font-size:15px; color:var(--ink);
+    background:var(--cream-lt); border:2.5px solid var(--ink); padding:11px 14px; resize:vertical;
+  }
+  .rf-input:focus{ outline:3px solid var(--orange); outline-offset:1px; }
+  .rf-hint{ font-size:12px; color:var(--ink-soft); margin-top:6px; line-height:1.5; }
+
+  /* checkbox tiles */
+  .opt-grid{ display:grid; grid-template-columns:repeat(2,1fr); gap:12px; }
+  @media (max-width:520px){ .opt-grid{grid-template-columns:1fr;} }
+  .opt-tile{
+    position:relative;
+    border:2.5px solid var(--ink);
+    background:var(--cream-lt);
+    padding:14px 16px;
+    cursor:pointer;
+    transition:transform .12s, box-shadow .12s, background .12s;
+  }
+  .opt-tile:hover{ transform:translate(-2px,-2px); box-shadow:4px 4px 0 var(--ink); }
+  .opt-tile input{ position:absolute; opacity:0; pointer-events:none; }
+  .opt-tile .opt-top{ display:flex; justify-content:space-between; align-items:center; gap:10px; }
+  .opt-tile .opt-name{ font-weight:700; font-size:14.5px; color:var(--ink); }
+  .opt-tile .opt-price{
+    font-family:'Space Mono', monospace; font-weight:700; font-size:12.5px; color:var(--orange-dk);
+    white-space:nowrap;
+  }
+  .opt-tile .opt-desc{ font-size:12.5px; color:var(--ink-soft); margin-top:4px; line-height:1.5; }
+  .opt-tile.checked{
+    background:var(--green); box-shadow:4px 4px 0 var(--ink);
+  }
+  .opt-tile.checked .opt-name, .opt-tile.checked .opt-desc{ color:var(--cream-lt); }
+  .opt-tile.checked .opt-price{ color:var(--cream-lt); }
+  .opt-tile .opt-check{
+    width:18px; height:18px; border:2px solid var(--ink); background:var(--cream-lt);
+    display:inline-flex; align-items:center; justify-content:center; flex-shrink:0;
+    font-size:12px; font-weight:700; color:var(--green);
+  }
+  .opt-tile.checked .opt-check{ background:var(--cream-lt); }
+  .opt-tile.checked .opt-check::after{ content:"✓"; }
+
+  /* sub-opciones (radios de modelo, GB, etc.) */
+  .sub-opts{
+    margin-top:14px; padding:16px; background:var(--paper);
+    border:2px dashed var(--ink-soft);
+    display:none;
+  }
+  .sub-opts.visible{ display:block; }
+  .sub-opts .rf-label{ margin-top:0; }
+  .radio-row{ display:flex; flex-wrap:wrap; gap:10px; margin-top:6px; }
+  .radio-chip{
+    font-family:'Space Mono', monospace; font-size:12.5px; font-weight:700;
+    padding:9px 14px; border:2px solid var(--ink); background:var(--cream-lt);
+    cursor:pointer; display:inline-flex; align-items:center; gap:8px;
+  }
+  .radio-chip input{ accent-color:var(--orange); }
+  .radio-chip.checked{ background:var(--orange); color:var(--cream-lt); }
+
+  .gb-row{ display:flex; align-items:center; gap:12px; margin-top:6px; }
+  .gb-row input[type=range]{ flex:1; accent-color:var(--orange); }
+  .gb-out{
+    font-family:'Space Mono', monospace; font-weight:700; font-size:14px;
+    background:var(--ink); color:var(--cream-lt); padding:6px 12px; min-width:64px; text-align:center;
+  }
+
+  /* repuestos dinámicos */
+  .repuesto-row{
+    display:grid; grid-template-columns:1fr 110px 34px; gap:8px; margin-bottom:8px; align-items:center;
+  }
+  .repuesto-row input{
+    font-family:'Space Grotesk', sans-serif; font-size:14px; color:var(--ink);
+    background:var(--cream-lt); border:2px solid var(--ink); padding:9px 10px;
+  }
+  .repuesto-row .rm-btn{
+    width:34px; height:34px; border:2px solid var(--ink); background:var(--cream-lt);
+    color:var(--ink); font-weight:700; cursor:pointer; font-size:16px; line-height:1;
+  }
+  .rm-btn:hover{ background:var(--orange); color:var(--cream-lt); }
+  .add-repuesto{
+    margin-top:6px;
+    font-family:'Space Mono', monospace; font-weight:700; font-size:12.5px; letter-spacing:0.05em;
+    text-transform:uppercase; padding:9px 16px; background:var(--cream-lt);
+    border:2px solid var(--ink); cursor:pointer; display:inline-flex; align-items:center; gap:6px;
+  }
+  .add-repuesto:hover{ background:var(--orange); color:var(--cream-lt); }
+
+  textarea.rf-input{ min-height:96px; }
+
+  .submit-btn{
+    width:100%; justify-content:center; margin-top:8px;
+    font-family:'Space Mono', monospace; font-weight:700; font-size:14px;
+    letter-spacing:0.08em; text-transform:uppercase;
+    padding:18px 30px; background:var(--green); color:var(--cream-lt);
+    border:3px solid var(--ink); box-shadow:5px 5px 0 var(--ink);
+    display:flex; align-items:center; gap:10px;
+    transition:transform .12s, box-shadow .12s;
+    cursor:pointer;
+  }
+  .submit-btn:hover{ transform:translate(-3px,-3px); box-shadow:8px 8px 0 var(--ink); }
+  .submit-note{ font-size:12px; color:var(--ink-soft); margin-top:12px; line-height:1.5; text-align:center; }
+  .form-error{
+    display:none; margin-top:12px; font-family:'Space Mono', monospace; font-size:12.5px;
+    color:#B0413E; background:var(--cream-lt); border:2px solid #B0413E; padding:10px 12px;
+  }
+
+  /* ---------- TICKET (resumen en vivo) ---------- */
+  .ticket-wrap{ position:sticky; top:100px; }
+  .ticket{
+    background:var(--cream-lt);
+    border:3px solid var(--ink);
+    box-shadow:8px 8px 0 var(--ink);
+    font-family:'Space Mono', monospace;
+    position:relative;
+  }
+  .ticket-head{
+    background:var(--ink); color:var(--cream-lt);
+    padding:18px 22px;
+    text-align:center;
+  }
+  .ticket-head .th-brand{ font-family:'Bangers', cursive; font-size:24px; letter-spacing:0.03em; }
+  .ticket-head .th-sub{ font-size:10.5px; letter-spacing:0.16em; text-transform:uppercase; color:var(--orange); margin-top:4px; }
+  .ticket-body{ padding:22px; }
+  .ticket-line{
+    display:flex; justify-content:space-between; gap:10px;
+    font-size:12.5px; color:var(--ink-soft); padding:7px 0;
+    border-bottom:1px dashed var(--cream-dk);
+  }
+  .ticket-line .tl-name{ flex:1; }
+  .ticket-line .tl-price{ color:var(--ink); font-weight:700; white-space:nowrap; }
+  .ticket-empty{
+    font-size:12.5px; color:var(--ink-soft); text-align:center; padding:18px 6px; line-height:1.6;
+  }
+  .ticket-total{
+    display:flex; justify-content:space-between; align-items:center;
+    margin-top:14px; padding-top:14px; border-top:2px solid var(--ink);
+  }
+  .ticket-total .tt-label{ font-size:13px; letter-spacing:0.06em; text-transform:uppercase; color:var(--ink-soft); }
+  .ticket-total .tt-value{ font-family:'Bangers', cursive; font-size:30px; color:var(--orange-dk); }
+  .ticket-foot{
+    padding:14px 22px 20px;
+    font-size:11px; color:var(--ink-soft); line-height:1.6; text-align:center;
+  }
+  .ticket::before, .ticket::after{
+    content:"";
+    position:absolute; left:0; right:0; height:12px;
+    background:
+      radial-gradient(circle at 8px 6px, transparent 6px, var(--cream) 6.5px) repeat-x;
+    background-size:16px 12px;
+  }
+  .ticket::before{ top:-3px; }
+  .ticket::after{ bottom:-3px; transform:rotate(180deg); }
+
+  footer{padding:32px 24px; background:var(--ink);}
+  .foot-wrap{
+    max-width:1120px; margin:0 auto;
+    display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:14px;
+  }
+  .foot-wrap .brand{font-size:19px; color:var(--cream-lt);}
+  footer .fine{font-family:'Space Mono', monospace; font-size:11.5px; color:var(--cream-dk); letter-spacing:0.03em;}
+
+  @media (prefers-reduced-motion: reduce){ *{transition:none !important;} }
+  a:focus-visible, button:focus-visible, input:focus-visible{outline:3px solid var(--orange); outline-offset:3px;}
+</style>
+</head>
+<body>
+
+<header>
+  <nav class="wrap">
+    <a class="brand" href="index.html" aria-label="Ir al inicio"><img src="logo.svg" class="brand-logo" alt="AZ TECH"></a>
+    <div class="navlinks">
+      <a href="index.html#servicios">Servicios</a>
+      <a href="index.html#detalle">En detalle</a>
+      <a href="index.html#faq">FAQ</a>
+      <a href="index.html#sobre-mi">Sobre mí</a>
+      <a href="pedido.html" class="current">Pedir presupuesto</a>
+    </div>
+    <div class="nav-ctas">
+      <a class="nav-cta" href="https://wa.me/5492964574506?text=Hola%20AZ%20TECH!%20Quiero%20consultar%20por%20un%20servicio." target="_blank" rel="noopener">
+        <span class="txt">WhatsApp</span>
+      </a>
+      <a class="nav-cta fb" href="https://www.facebook.com/profile.php?id=61572183662180" target="_blank" rel="noopener" aria-label="AZ TECH en Facebook">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M22 12.06C22 6.5 17.52 2 12 2S2 6.5 2 12.06c0 5.02 3.66 9.18 8.44 9.94v-7.03H7.9v-2.91h2.54V9.83c0-2.51 1.49-3.89 3.77-3.89 1.09 0 2.24.2 2.24.2v2.47h-1.26c-1.24 0-1.63.78-1.63 1.58v1.9h2.78l-.44 2.91h-2.34V22c4.78-.76 8.44-4.92 8.44-9.94z"/></svg>
+        <span class="txt">Facebook</span>
+      </a>
+      <a class="nav-cta ig" href="https://www.instagram.com/az_tech.t/" target="_blank" rel="noopener" aria-label="AZ TECH en Instagram">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2c2.72 0 3.06.01 4.12.06 1.06.05 1.79.22 2.43.47.66.26 1.22.6 1.77 1.15.55.55.9 1.11 1.15 1.77.25.64.42 1.37.47 2.43.05 1.06.06 1.4.06 4.12s-.01 3.06-.06 4.12c-.05 1.06-.22 1.79-.47 2.43a4.9 4.9 0 0 1-1.15 1.77 4.9 4.9 0 0 1-1.77 1.15c-.64.25-1.37.42-2.43.47-1.06.05-1.4.06-4.12.06s-3.06-.01-4.12-.06c-1.06-.05-1.79-.22-2.43-.47a4.9 4.9 0 0 1-1.77-1.15 4.9 4.9 0 0 1-1.15-1.77c-.25-.64-.42-1.37-.47-2.43C2.01 15.06 2 14.72 2 12s.01-3.06.06-4.12c.05-1.06.22-1.79.47-2.43.26-.66.6-1.22 1.15-1.77a4.9 4.9 0 0 1 1.77-1.15c.64-.25 1.37-.42 2.43-.47C8.94 2.01 9.28 2 12 2zm0 1.8c-2.67 0-2.99.01-4.04.06-.87.04-1.34.18-1.65.3-.42.16-.71.36-1.02.67-.31.31-.5.6-.67 1.02-.12.31-.26.78-.3 1.65C4.27 9 4.26 9.33 4.26 12s.01 2.99.06 4.04c.04.87.18 1.34.3 1.65.16.42.36.71.67 1.02.31.31.6.5 1.02.67.31.12.78.26 1.65.3 1.05.05 1.37.06 4.04.06s2.99-.01 4.04-.06c.87-.04 1.34-.18 1.65-.3.42-.16.71-.36 1.02-.67.31-.31.5-.6.67-1.02.12-.31.26-.78.3-1.65.05-1.05.06-1.37.06-4.04s-.01-2.99-.06-4.04c-.04-.87-.18-1.34-.3-1.65a2.75 2.75 0 0 0-.67-1.02 2.75 2.75 0 0 0-1.02-.67c-.31-.12-.78-.26-1.65-.3C14.99 3.81 14.67 3.8 12 3.8zm0 3.05a5.15 5.15 0 1 1 0 10.3 5.15 5.15 0 0 1 0-10.3zm0 1.8a3.35 3.35 0 1 0 0 6.7 3.35 3.35 0 0 0 0-6.7zm5.35-1.99a1.2 1.2 0 1 1-2.4 0 1.2 1.2 0 0 1 2.4 0z"/></svg>
+        <span class="txt">Instagram</span>
+      </a>
+    </div>
+  </nav>
+</header>
+
+<section class="pedido-hero">
+  <div class="wrap">
+    <div class="hero-sticker">★ ARMÁ TU PEDIDO ★</div>
+    <h1>Pedí tu presupuesto</h1>
+    <p>Elegí qué necesitás, contanos qué le pasa a tu equipo y mirá el estimado actualizarse al toque. Al final lo mandás directo por WhatsApp.</p>
+  </div>
+</section>
+
+<section class="pedido-main">
+  <div class="wrap">
+    <div class="pedido-grid">
+
+      <!-- ============ FORM ============ -->
+      <form class="form-panel ink-card" id="pedido-form">
+
+        <div class="form-section">
+          <h2><span class="fs-num">1</span>Tu equipo</h2>
+          <p class="fs-sub">Contanos qué tipo de equipo es y el modelo, así sé con qué estoy trabajando.</p>
+
+          <label class="rf-label" for="tipo-equipo">Tipo de equipo</label>
+          <select class="rf-input" id="tipo-equipo">
+            <option value="consola">Consola</option>
+            <option value="pc">PC de escritorio</option>
+            <option value="notebook">Notebook</option>
+            <option value="celular">Celular</option>
+            <option value="otro">Otro</option>
+          </select>
+
+          <label class="rf-label" for="modelo-equipo">Marca / modelo</label>
+          <input class="rf-input" type="text" id="modelo-equipo" placeholder="Ej: PS4 Slim, notebook Lenovo Ideapad, iPhone 11...">
+        </div>
+
+        <div class="form-section">
+          <h2><span class="fs-num">2</span>¿Qué necesitás?</h2>
+          <p class="fs-sub">Podés marcar más de una opción. Los precios son estimados y se confirman en el diagnóstico, que siempre es gratis.</p>
+
+          <div class="opt-grid">
+            <label class="opt-tile" data-opt="mantenimiento">
+              <input type="checkbox" data-price="20000">
+              <div class="opt-top">
+                <span class="opt-name">Mantenimiento</span>
+                <span class="opt-check"></span>
+              </div>
+              <div class="opt-desc">Limpieza interna, pasta térmica y revisión general.</div>
+              <div class="opt-price">$20.000</div>
+            </label>
+
+            <label class="opt-tile" data-opt="reparacion">
+              <input type="checkbox" data-price="0">
+              <div class="opt-top">
+                <span class="opt-name">Reparación de falla</span>
+                <span class="opt-check"></span>
+              </div>
+              <div class="opt-desc">Contame el problema abajo y qué tipo de reparación es.</div>
+              <div class="opt-price">$20.000 - $30.000</div>
+            </label>
+
+            <label class="opt-tile" data-opt="liberacion">
+              <input type="checkbox" data-price="15000">
+              <div class="opt-top">
+                <span class="opt-name">Liberación de consola</span>
+                <span class="opt-check"></span>
+              </div>
+              <div class="opt-desc">Chipeo, CFW/HEN o GoldHEN según el modelo. Contame cuál es en "Marca / modelo" arriba.</div>
+              <div class="opt-price">$15.000</div>
+            </label>
+
+            <label class="opt-tile" data-opt="juegos">
+              <input type="checkbox" data-price="0">
+              <div class="opt-top">
+                <span class="opt-name">Instalación de juegos</span>
+                <span class="opt-check"></span>
+              </div>
+              <div class="opt-desc">Precio según el tamaño total de los juegos.</div>
+              <div class="opt-price">según GB</div>
+            </label>
+          </div>
+
+          <!-- Sub-opciones: Reparación -->
+          <div class="sub-opts" id="sub-reparacion">
+            <label class="rf-label">¿Qué tipo de reparación es?</label>
+            <div class="radio-row" id="radios-reparacion">
+              <label class="radio-chip"><input type="radio" name="tipo-reparacion" value="simple" data-price="20000"> Repuesto simple (flex, etc.) · $20.000</label>
+              <label class="radio-chip"><input type="radio" name="tipo-reparacion" value="soldadura" data-price="30000"> Con soldadura · $30.000</label>
+              <label class="radio-chip"><input type="radio" name="tipo-reparacion" value="noseguro"> No estoy seguro · a confirmar</label>
+            </div>
+          </div>
+
+          <!-- Sub-opciones: Juegos -->
+          <div class="sub-opts" id="sub-juegos">
+            <label class="rf-label">¿Cuántos juegos querés instalar?</label>
+            <div class="gb-row">
+              <input type="range" id="gb-slider" min="1" max="30" value="1" step="1">
+              <span class="gb-out" id="gb-out">1 juego</span>
+            </div>
+            <p class="rf-hint" id="gb-precio-hint">$4.000 c/u = $4.000</p>
+            <p class="rf-hint">Cuantos más juegos, menos sale cada uno: 1 = $4.000 c/u · 5+ = $3.000 c/u · 10+ = $2.500 c/u · 20+ = $2.000 c/u.</p>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <h2><span class="fs-num">3</span>¿Qué le pasa?</h2>
+          <p class="fs-sub">Contame el síntoma con el mayor detalle posible: cuándo pasa, si hace ruido, si prende, etc.</p>
+          <textarea class="rf-input" id="descripcion-falla" placeholder="Ej: la consola prende pero no me lee los discos, hace un ruido raro al cargar..."></textarea>
+        </div>
+
+        <div class="form-section">
+          <h2><span class="fs-num">4</span>Repuestos que ya sabés que hacen falta</h2>
+          <p class="fs-sub">Opcional. Si no sabés qué repuesto necesita, dejalo en blanco — te lo digo yo después del diagnóstico.</p>
+          <div id="repuestos-list"></div>
+          <button type="button" class="add-repuesto" id="add-repuesto">+ Agregar repuesto</button>
+        </div>
+
+        <div class="form-section">
+          <h2><span class="fs-num">5</span>Nota adicional</h2>
+          <textarea class="rf-input" id="nota-adicional" placeholder="Cualquier otra cosa que quieras contarme..."></textarea>
+        </div>
+
+        <div class="form-section">
+          <h2><span class="fs-num">6</span>Tus datos</h2>
+          <label class="rf-label" for="pedido-nombre">Nombre</label>
+          <input class="rf-input" type="text" id="pedido-nombre" placeholder="Ej: Brayan" required>
+
+          <label class="rf-label" for="pedido-tel">WhatsApp / teléfono</label>
+          <input class="rf-input" type="text" id="pedido-tel" placeholder="Ej: 2964 555555">
+        </div>
+
+        <button type="submit" class="btn-primary submit-btn" id="btn-enviar-pedido">
+          Enviar pedido por WhatsApp →
+        </button>
+        <p class="form-error" id="form-error">Che, contame tu nombre y elegí al menos un servicio antes de enviar.</p>
+        <p class="submit-note">Se abre WhatsApp con todo este pedido ya escrito. Vos lo revisás antes de mandarlo.</p>
+      </form>
+
+      <!-- ============ TICKET (resumen en vivo) ============ -->
+      <div class="ticket-wrap">
+        <div class="ticket">
+          <div class="ticket-head">
+            <div class="th-brand">AZ TECH</div>
+            <div class="th-sub">Presupuesto estimado</div>
+          </div>
+          <div class="ticket-body">
+            <div id="ticket-lines">
+              <div class="ticket-empty" id="ticket-empty-msg">Todavía no elegiste nada.<br>Marcá un servicio a la izquierda.</div>
+            </div>
+            <div class="ticket-total">
+              <span class="tt-label">Total</span>
+              <span class="tt-value" id="ticket-total-value">$0</span>
+            </div>
+          </div>
+          <div class="ticket-foot">
+            * Estimado, no es precio final.<br>Se confirma después del diagnóstico gratis.
+          </div>
+        </div>
+        <button type="button" class="btn-primary submit-btn" id="btn-enviar-pedido-ticket" style="margin-top:16px;">
+          Enviar pedido por WhatsApp →
+        </button>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="foot-wrap">
+    <div class="brand">AZ TECH</div>
+    <div class="fine">© 2026 AZ TECH — Service técnico independiente.</div>
+  </div>
+</footer>
+
+<script>
+(function(){
+
+  // =====================================================================
+  // PRECIOS DE EJEMPLO — AJUSTÁ ESTOS NÚMEROS A LO QUE VOS COBRÁS.
+  // Todo lo demás del script se recalcula solo, no hace falta tocar nada más.
+  // =====================================================================
+
+  // Precio por juego según cantidad total pedida (tramos, precio por unidad):
+  //   1 a 4 juegos   -> $4.000 c/u
+  //   5 a 9 juegos   -> $3.000 c/u
+  //   10 a 19 juegos -> $2.500 c/u
+  //   20 o más       -> $2.000 c/u
+  function precioPorJuego(cant){
+    if(cant >= 20) return 2000;
+    if(cant >= 10) return 2500;
+    if(cant >= 5) return 3000;
+    return 4000;
+  }
+
+  var form = document.getElementById('pedido-form');
+  var ticketLines = document.getElementById('ticket-lines');
+  var ticketEmptyMsg = document.getElementById('ticket-empty-msg');
+  var ticketTotalValue = document.getElementById('ticket-total-value');
+  var formError = document.getElementById('form-error');
+
+  var optTiles = Array.prototype.slice.call(document.querySelectorAll('.opt-tile'));
+  var subJuegos = document.getElementById('sub-juegos');
+  var subReparacion = document.getElementById('sub-reparacion');
+  var gbSlider = document.getElementById('gb-slider');
+  var gbOut = document.getElementById('gb-out');
+  var gbPrecioHint = document.getElementById('gb-precio-hint');
+  var repuestosList = document.getElementById('repuestos-list');
+  var addRepuestoBtn = document.getElementById('add-repuesto');
+
+  function money(n){
+    return '$' + Math.round(n).toLocaleString('es-AR');
+  }
+
+  // ---- toggle visual de los opt-tile ----
+  // El <label> ya togglea el checkbox solo (comportamiento nativo del navegador),
+  // así que acá solo escuchamos el evento "change" para sincronizar estilos y el ticket.
+  // (Antes se togglaba "a mano" con click, y eso duplicaba el toggle nativo del label
+  // dejando todo marcado sin poder desmarcarlo — ese era el bug.)
+  optTiles.forEach(function(tile){
+    var checkbox = tile.querySelector('input[type=checkbox]');
+    checkbox.addEventListener('change', function(){
+      tile.classList.toggle('checked', checkbox.checked);
+      if(tile.dataset.opt === 'juegos'){
+        subJuegos.classList.toggle('visible', checkbox.checked);
+      }
+      if(tile.dataset.opt === 'reparacion'){
+        subReparacion.classList.toggle('visible', checkbox.checked);
+      }
+      recalcular();
+    });
+  });
+
+  // ---- radios de tipo de reparación (20k / 30k / no seguro) ----
+  var radiosReparacion = Array.prototype.slice.call(document.querySelectorAll('input[name="tipo-reparacion"]'));
+  radiosReparacion.forEach(function(radio){
+    radio.addEventListener('change', function(){
+      radiosReparacion.forEach(function(r){
+        r.closest('.radio-chip').classList.toggle('checked', r.checked);
+      });
+      recalcular();
+    });
+  });
+
+  function precioReparacionElegida(){
+    var elegido = radiosReparacion.filter(function(r){ return r.checked; })[0];
+    if(!elegido || !elegido.dataset.price) return null;
+    return parseInt(elegido.dataset.price, 10);
+  }
+
+  // ---- cantidad de juegos ----
+  function actualizarGB(){
+    var cant = parseInt(gbSlider.value, 10);
+    gbOut.textContent = cant + (cant === 1 ? ' juego' : ' juegos');
+    var precioUnit = precioPorJuego(cant);
+    var total = cant * precioUnit;
+    gbPrecioHint.textContent = money(precioUnit) + ' c/u = ' + money(total);
+    recalcular();
+  }
+  gbSlider.addEventListener('input', actualizarGB);
+
+  // ---- repuestos dinámicos ----
+  function agregarRepuesto(nombre, precio){
+    var row = document.createElement('div');
+    row.className = 'repuesto-row';
+    row.innerHTML =
+      '<input type="text" class="rep-nombre" placeholder="Nombre del repuesto (ej: pantalla, batería)" value="' + (nombre||'') + '">' +
+      '<input type="number" class="rep-precio" placeholder="$" min="0" step="500" value="' + (precio||'') + '">' +
+      '<button type="button" class="rm-btn" aria-label="Quitar repuesto">✕</button>';
+    repuestosList.appendChild(row);
+
+    row.querySelector('.rep-nombre').addEventListener('input', recalcular);
+    row.querySelector('.rep-precio').addEventListener('input', recalcular);
+    row.querySelector('.rm-btn').addEventListener('click', function(){
+      row.remove();
+      recalcular();
+    });
+  }
+  addRepuestoBtn.addEventListener('click', function(){ agregarRepuesto(); });
+
+  // ---- recalcular ticket ----
+  function recalcular(){
+    var lineas = [];
+    var total = 0;
+
+    optTiles.forEach(function(tile){
+      var checkbox = tile.querySelector('input[type=checkbox]');
+      if(!checkbox.checked) return;
+      var opt = tile.dataset.opt;
+      var nombre = tile.querySelector('.opt-name').textContent;
+
+      if(opt === 'mantenimiento'){
+        var p = parseInt(checkbox.dataset.price, 10);
+        lineas.push({ nombre: nombre, precio: p });
+        total += p;
+      } else if(opt === 'reparacion'){
+        var precioRep = precioReparacionElegida();
+        var etiquetaRep = nombre;
+        var elegidoRep = radiosReparacion.filter(function(r){ return r.checked; })[0];
+        if(elegidoRep) etiquetaRep += ' (' + elegidoRep.parentElement.textContent.split('·')[0].trim() + ')';
+        lineas.push({ nombre: etiquetaRep, precio: precioRep, nota: precioRep === null ? 'a confirmar' : null });
+        if(precioRep !== null) total += precioRep;
+      } else if(opt === 'liberacion'){
+        var pLib = parseInt(checkbox.dataset.price, 10);
+        lineas.push({ nombre: nombre, precio: pLib });
+        total += pLib;
+      } else if(opt === 'juegos'){
+        var cant = parseInt(gbSlider.value, 10);
+        var precioUnit = precioPorJuego(cant);
+        var precioJuegos = cant * precioUnit;
+        lineas.push({ nombre: nombre + ' (' + cant + (cant===1?' juego':' juegos') + ' a ' + money(precioUnit) + ' c/u)', precio: precioJuegos });
+        total += precioJuegos;
+      }
+    });
+
+    // repuestos
+    document.querySelectorAll('.repuesto-row').forEach(function(row){
+      var nombre = row.querySelector('.rep-nombre').value.trim();
+      var precio = parseFloat(row.querySelector('.rep-precio').value);
+      if(nombre || !isNaN(precio)){
+        lineas.push({
+          nombre: 'Repuesto: ' + (nombre || 'sin especificar'),
+          precio: isNaN(precio) ? null : precio,
+          nota: isNaN(precio) ? 'sin precio' : null
+        });
+        if(!isNaN(precio)) total += precio;
+      }
+    });
+
+    // pintar ticket
+    ticketLines.innerHTML = '';
+    if(lineas.length === 0){
+      ticketLines.appendChild(ticketEmptyMsg);
+    } else {
+      lineas.forEach(function(l){
+        var div = document.createElement('div');
+        div.className = 'ticket-line';
+        var precioTxt = l.precio !== null ? money(l.precio) : (l.nota || 'a confirmar');
+        div.innerHTML = '<span class="tl-name">' + escapeHtml(l.nombre) + '</span><span class="tl-price">' + escapeHtml(precioTxt) + '</span>';
+        ticketLines.appendChild(div);
+      });
+    }
+    ticketTotalValue.textContent = money(total) + (lineasTieneAconfirmar(lineas) ? ' +' : '');
+  }
+
+  function lineasTieneAconfirmar(lineas){
+    return lineas.some(function(l){ return l.precio === null; });
+  }
+
+  function escapeHtml(str){
+    return String(str).replace(/[&<>"']/g, function(c){
+      return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+    });
+  }
+
+  // ---- envío por WhatsApp ----
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+
+    var nombre = document.getElementById('pedido-nombre').value.trim();
+    var algunServicioElegido = optTiles.some(function(t){ return t.querySelector('input').checked; });
+
+    if(!nombre || !algunServicioElegido){
+      formError.style.display = 'block';
+      return;
+    }
+    formError.style.display = 'none';
+
+    var tipoEquipo = document.getElementById('tipo-equipo').value;
+    var modeloEquipo = document.getElementById('modelo-equipo').value.trim();
+    var descripcion = document.getElementById('descripcion-falla').value.trim();
+    var nota = document.getElementById('nota-adicional').value.trim();
+    var tel = document.getElementById('pedido-tel').value.trim();
+
+    var tipoLabels = { consola:'Consola', pc:'PC de escritorio', notebook:'Notebook', celular:'Celular', otro:'Otro' };
+
+    var msg = [];
+    msg.push('Hola AZ TECH! Quiero pedir un presupuesto.');
+    msg.push('');
+    msg.push('*Nombre:* ' + nombre);
+    if(tel) msg.push('*Contacto:* ' + tel);
+    msg.push('*Equipo:* ' + tipoLabels[tipoEquipo] + (modeloEquipo ? ' - ' + modeloEquipo : ''));
+    msg.push('');
+    msg.push('*Servicios pedidos:*');
+
+    var lineas = [];
+    var total = 0;
+
+    optTiles.forEach(function(tile){
+      var checkbox = tile.querySelector('input[type=checkbox]');
+      if(!checkbox.checked) return;
+      var opt = tile.dataset.opt;
+      var nombreOpt = tile.querySelector('.opt-name').textContent;
+
+      if(opt === 'mantenimiento'){
+        var p = parseInt(checkbox.dataset.price, 10);
+        lineas.push('- ' + nombreOpt + ': ' + money(p));
+        total += p;
+      } else if(opt === 'reparacion'){
+        var precioRep2 = precioReparacionElegida();
+        var elegidoRep2 = radiosReparacion.filter(function(r){ return r.checked; })[0];
+        var etiquetaRep2 = nombreOpt + (elegidoRep2 ? ' (' + elegidoRep2.parentElement.textContent.split('·')[0].trim() + ')' : '');
+        lineas.push('- ' + etiquetaRep2 + ': ' + (precioRep2 === null ? 'a confirmar' : money(precioRep2)));
+        if(precioRep2 !== null) total += precioRep2;
+      } else if(opt === 'liberacion'){
+        var pLib2 = parseInt(checkbox.dataset.price, 10);
+        lineas.push('- ' + nombreOpt + ': ' + money(pLib2));
+        total += pLib2;
+      } else if(opt === 'juegos'){
+        var cant = parseInt(gbSlider.value, 10);
+        var precioUnit = precioPorJuego(cant);
+        var precioJuegos = cant * precioUnit;
+        lineas.push('- ' + nombreOpt + ' (' + cant + (cant===1?' juego':' juegos') + ' a ' + money(precioUnit) + ' c/u): ' + money(precioJuegos));
+        total += precioJuegos;
+      }
+    });
+
+    document.querySelectorAll('.repuesto-row').forEach(function(row){
+      var n = row.querySelector('.rep-nombre').value.trim();
+      var pr = parseFloat(row.querySelector('.rep-precio').value);
+      if(n || !isNaN(pr)){
+        lineas.push('- Repuesto (' + (n || 'sin especificar') + '): ' + (isNaN(pr) ? 'sin precio' : money(pr)));
+        if(!isNaN(pr)) total += pr;
+      }
+    });
+
+    msg = msg.concat(lineas);
+    msg.push('');
+    msg.push('*Total estimado:* ' + money(total));
+    if(descripcion) { msg.push(''); msg.push('*Qué le pasa:* ' + descripcion); }
+    if(nota) { msg.push(''); msg.push('*Nota:* ' + nota); }
+
+    var texto = encodeURIComponent(msg.join('\n'));
+    window.open('https://wa.me/5492964574506?text=' + texto, '_blank');
+  });
+
+  // ---- botón de WhatsApp de la notita (ticket) dispara el mismo envío del form ----
+  var btnEnviarTicket = document.getElementById('btn-enviar-pedido-ticket');
+  btnEnviarTicket.addEventListener('click', function(){
+    if(form.requestSubmit){
+      form.requestSubmit();
+    } else {
+      // fallback para navegadores viejos sin requestSubmit
+      var evt = document.createEvent('Event');
+      evt.initEvent('submit', true, true);
+      if(form.dispatchEvent(evt)){ form.submit(); }
+    }
+  });
+
+  // init
+  actualizarGB();
+  recalcular();
+})();
+</script>
+
+</body>
+</html>
