@@ -418,8 +418,8 @@
                 <span class="opt-name">Reparación de falla</span>
                 <span class="opt-check"></span>
               </div>
-              <div class="opt-desc">Contame el problema abajo y qué tipo de reparación es.</div>
-              <div class="opt-price">$30.000</div>
+              <div class="opt-desc">Precio final (mano de obra + el repuesto simple, si lleva). Elegí abajo qué tipo es.</div>
+              <div class="opt-price">desde $20.000</div>
             </label>
 
             <label class="opt-tile" data-opt="liberacion">
@@ -443,6 +443,17 @@
             </label>
           </div>
 
+          <!-- Sub-opciones: Reparación -->
+          <div class="sub-opts" id="sub-reparacion">
+            <label class="rf-label">¿Qué tipo de reparación es?</label>
+            <div class="radio-row" id="radios-reparacion">
+              <label class="radio-chip"><input type="radio" name="tipo-reparacion" value="simple" data-price="20000"> Repuesto simple (flex, etc.) · $20.000</label>
+              <label class="radio-chip"><input type="radio" name="tipo-reparacion" value="soldadura" data-price="30000"> Con soldadura · $30.000</label>
+              <label class="radio-chip"><input type="radio" name="tipo-reparacion" value="noseguro"> No estoy seguro · a confirmar</label>
+            </div>
+            <p class="rf-hint">Este precio ya es el total (mano de obra + el repuesto chico, tipo flex o conector). Si además hace falta una pieza más cara y específica (pantalla, batería, etc.), agregala como repuesto más abajo.</p>
+          </div>
+
           <!-- Sub-opciones: Juegos -->
           <div class="sub-opts" id="sub-juegos">
             <label class="rf-label">¿Cuántos juegos querés instalar?</label>
@@ -462,8 +473,8 @@
         </div>
 
         <div class="form-section">
-          <h2><span class="fs-num">4</span>Repuestos que ya sabés que hacen falta</h2>
-          <p class="fs-sub">Opcional. Si no sabés qué repuesto necesita, dejalo en blanco — te lo digo yo después del diagnóstico.</p>
+          <h2><span class="fs-num">4</span>Otros repuestos específicos (opcional)</h2>
+          <p class="fs-sub">Solo para piezas puntuales que no están incluidas arriba, como una pantalla, batería o fuente. Si no sabés, dejalo en blanco — te lo digo yo después del diagnóstico.</p>
           <div id="repuestos-list"></div>
           <button type="button" class="add-repuesto" id="add-repuesto">+ Agregar repuesto</button>
         </div>
@@ -529,7 +540,7 @@
 (function(){
 
   // =====================================================================
-  // PRECIOS DE EJEMPLO — AJUSTÁ ESTOS NÚMEROS A LO QUE VOS COBRÁS.
+  // PRECIOS — AJUSTÁ ESTOS NÚMEROS SI EN ALGÚN MOMENTO CAMBIAN.
   // Todo lo demás del script se recalcula solo, no hace falta tocar nada más.
   // =====================================================================
 
@@ -567,8 +578,6 @@
   // ---- toggle visual de los opt-tile ----
   // El <label> ya togglea el checkbox solo (comportamiento nativo del navegador),
   // así que acá solo escuchamos el evento "change" para sincronizar estilos y el ticket.
-  // (Antes se togglaba "a mano" con click, y eso duplicaba el toggle nativo del label
-  // dejando todo marcado sin poder desmarcarlo — ese era el bug.)
   optTiles.forEach(function(tile){
     var checkbox = tile.querySelector('input[type=checkbox]');
     checkbox.addEventListener('change', function(){
@@ -792,7 +801,6 @@
     if(form.requestSubmit){
       form.requestSubmit();
     } else {
-      // fallback para navegadores viejos sin requestSubmit
       var evt = document.createEvent('Event');
       evt.initEvent('submit', true, true);
       if(form.dispatchEvent(evt)){ form.submit(); }
