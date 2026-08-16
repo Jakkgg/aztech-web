@@ -413,13 +413,13 @@
             </label>
 
             <label class="opt-tile" data-opt="reparacion">
-              <input type="checkbox" data-price="0">
+              <input type="checkbox" data-price="30000">
               <div class="opt-top">
                 <span class="opt-name">Reparación de falla</span>
                 <span class="opt-check"></span>
               </div>
-              <div class="opt-desc">Precio final (mano de obra + el repuesto simple, si lleva). Elegí abajo qué tipo es.</div>
-              <div class="opt-price">desde $20.000</div>
+              <div class="opt-desc">Contame el problema abajo.</div>
+              <div class="opt-price">$30.000</div>
             </label>
 
             <label class="opt-tile" data-opt="liberacion">
@@ -441,17 +441,6 @@
               <div class="opt-desc">Precio según el tamaño total de los juegos.</div>
               <div class="opt-price">según GB</div>
             </label>
-          </div>
-
-          <!-- Sub-opciones: Reparación -->
-          <div class="sub-opts" id="sub-reparacion">
-            <label class="rf-label">¿Qué tipo de reparación es?</label>
-            <div class="radio-row" id="radios-reparacion">
-              <label class="radio-chip"><input type="radio" name="tipo-reparacion" value="simple" data-price="20000"> Repuesto simple (flex, etc.) · $20.000</label>
-              <label class="radio-chip"><input type="radio" name="tipo-reparacion" value="soldadura" data-price="30000"> Con soldadura · $30.000</label>
-              <label class="radio-chip"><input type="radio" name="tipo-reparacion" value="noseguro"> No estoy seguro · a confirmar</label>
-            </div>
-            <p class="rf-hint">Este precio ya es el total (mano de obra + el repuesto chico, tipo flex o conector). Si además hace falta una pieza más cara y específica (pantalla, batería, etc.), agregala como repuesto más abajo.</p>
           </div>
 
           <!-- Sub-opciones: Juegos -->
@@ -564,7 +553,6 @@
 
   var optTiles = Array.prototype.slice.call(document.querySelectorAll('.opt-tile'));
   var subJuegos = document.getElementById('sub-juegos');
-  var subReparacion = document.getElementById('sub-reparacion');
   var gbSlider = document.getElementById('gb-slider');
   var gbOut = document.getElementById('gb-out');
   var gbPrecioHint = document.getElementById('gb-precio-hint');
@@ -585,29 +573,9 @@
       if(tile.dataset.opt === 'juegos'){
         subJuegos.classList.toggle('visible', checkbox.checked);
       }
-      if(tile.dataset.opt === 'reparacion'){
-        subReparacion.classList.toggle('visible', checkbox.checked);
-      }
       recalcular();
     });
   });
-
-  // ---- radios de tipo de reparación (20k / 30k / no seguro) ----
-  var radiosReparacion = Array.prototype.slice.call(document.querySelectorAll('input[name="tipo-reparacion"]'));
-  radiosReparacion.forEach(function(radio){
-    radio.addEventListener('change', function(){
-      radiosReparacion.forEach(function(r){
-        r.closest('.radio-chip').classList.toggle('checked', r.checked);
-      });
-      recalcular();
-    });
-  });
-
-  function precioReparacionElegida(){
-    var elegido = radiosReparacion.filter(function(r){ return r.checked; })[0];
-    if(!elegido || !elegido.dataset.price) return null;
-    return parseInt(elegido.dataset.price, 10);
-  }
 
   // ---- cantidad de juegos ----
   function actualizarGB(){
@@ -655,12 +623,9 @@
         lineas.push({ nombre: nombre, precio: p });
         total += p;
       } else if(opt === 'reparacion'){
-        var precioRep = precioReparacionElegida();
-        var etiquetaRep = nombre;
-        var elegidoRep = radiosReparacion.filter(function(r){ return r.checked; })[0];
-        if(elegidoRep) etiquetaRep += ' (' + elegidoRep.parentElement.textContent.split('·')[0].trim() + ')';
-        lineas.push({ nombre: etiquetaRep, precio: precioRep, nota: precioRep === null ? 'a confirmar' : null });
-        if(precioRep !== null) total += precioRep;
+        var pRep = parseInt(checkbox.dataset.price, 10);
+        lineas.push({ nombre: nombre, precio: pRep });
+        total += pRep;
       } else if(opt === 'liberacion'){
         var pLib = parseInt(checkbox.dataset.price, 10);
         lineas.push({ nombre: nombre, precio: pLib });
@@ -758,11 +723,9 @@
         lineas.push('- ' + nombreOpt + ': ' + money(p));
         total += p;
       } else if(opt === 'reparacion'){
-        var precioRep2 = precioReparacionElegida();
-        var elegidoRep2 = radiosReparacion.filter(function(r){ return r.checked; })[0];
-        var etiquetaRep2 = nombreOpt + (elegidoRep2 ? ' (' + elegidoRep2.parentElement.textContent.split('·')[0].trim() + ')' : '');
-        lineas.push('- ' + etiquetaRep2 + ': ' + (precioRep2 === null ? 'a confirmar' : money(precioRep2)));
-        if(precioRep2 !== null) total += precioRep2;
+        var pRep2 = parseInt(checkbox.dataset.price, 10);
+        lineas.push('- ' + nombreOpt + ': ' + money(pRep2));
+        total += pRep2;
       } else if(opt === 'liberacion'){
         var pLib2 = parseInt(checkbox.dataset.price, 10);
         lineas.push('- ' + nombreOpt + ': ' + money(pLib2));
