@@ -409,7 +409,7 @@
                 <span class="opt-check"></span>
               </div>
               <div class="opt-desc">Limpieza interna, pasta térmica y revisión general.</div>
-              <div class="opt-price">$35.000</div>
+              <div class="opt-price">$40.000</div>
             </label>
 
             <label class="opt-tile" data-opt="reparacion">
@@ -429,7 +429,7 @@
                 <span class="opt-check"></span>
               </div>
               <div class="opt-desc">Chipeo, CFW/HEN o GoldHEN según el modelo. Contame cuál es en "Marca / modelo" arriba.</div>
-              <div class="opt-price">$15.000</div>
+              <div class="opt-price">$20.000</div>
             </label>
 
             <label class="opt-tile" data-opt="juegos">
@@ -450,8 +450,8 @@
               <input type="range" id="gb-slider" min="1" max="30" value="1" step="1">
               <span class="gb-out" id="gb-out">1 juego</span>
             </div>
-            <p class="rf-hint" id="gb-precio-hint">$4.000 c/u = $4.000</p>
-            <p class="rf-hint">Cuantos más juegos, menos sale cada uno: 1 = $4.000 c/u · 5+ = $3.000 c/u · 10+ = $2.500 c/u · 20+ = $2.000 c/u.</p>
+            <p class="rf-hint" id="gb-precio-hint">$10.000 c/u = $10.000</p>
+            <p class="rf-hint">Cuantos más juegos, menos sale cada uno: 1 = $10.000 · 5+ = $30.000 · 10+ = $80.000 · 20+ = $150.000.</p>
           </div>
         </div>
 
@@ -476,10 +476,10 @@
         <div class="form-section">
           <h2><span class="fs-num">6</span>Tus datos</h2>
           <label class="rf-label" for="pedido-nombre">Nombre</label>
-          <input class="rf-input" type="text" id="pedido-nombre" placeholder="Ej: Brayan" required>
+          <input class="rf-input" type="text" id="pedido-nombre" placeholder="Ej: Thiago" required>
 
           <label class="rf-label" for="pedido-tel">WhatsApp / teléfono</label>
-          <input class="rf-input" type="text" id="pedido-tel" placeholder="Ej: 2964 555555">
+          <input class="rf-input" type="text" id="pedido-tel" placeholder="Ej: 2964 12-3456">
         </div>
 
         <button type="submit" class="btn-primary submit-btn" id="btn-enviar-pedido">
@@ -539,10 +539,10 @@
   //   10 a 19 juegos -> $2.500 c/u
   //   20 o más       -> $2.000 c/u
   function precioPorJuego(cant){
-    if(cant >= 20) return 2000;
-    if(cant >= 10) return 2500;
-    if(cant >= 5) return 3000;
-    return 4000;
+    if(cant >= 20) return 7500;
+    if(cant >= 10) return 8000;
+    if(cant >= 5) return 6000;
+    return 10000;
   }
 
   var form = document.getElementById('pedido-form');
