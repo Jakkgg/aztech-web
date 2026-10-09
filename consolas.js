@@ -1,84 +1,101 @@
-/* =====================================================================
-   CONSOLAS EN VENTA
-   Para agregar una consola copiá un bloque { ... } y cambiá los datos.
-   Fotos: poné una lista en "fotos" (la primera es la portada), o usá
-   "carpeta" + "cantidad" y se buscan fotos/consolas/<carpeta>/1.jpeg, 2.jpeg...
-   Los dos de abajo son EJEMPLOS: reemplazalos por tus consolas reales.
-   ===================================================================== */
-var CONSOLAS = [
-  {
-    nombre: 'PlayStation 4 Slim 500GB',
-    precio: '$250.000',
-    estado: 'Usada · Excelente',
-    fotos: [
-      'fotos/consolas/ps4-slim/1.jpeg',
-      'fotos/consolas/ps4-slim/2.jpeg',
-      'fotos/consolas/ps4-slim/3.jpeg'
-    ],
-    descripcion: 'PS4 Slim revisada por dentro, con limpieza completa y pasta térmica nueva. Funciona perfecto y lista para jugar.',
-    caracteristicas: ['Liberada con GoldHEN', 'Limpieza interna y pasta térmica nueva', 'Lectora funcionando perfecto'],
-    especificaciones: [['Modelo', 'CUH-2215A'], ['Almacenamiento', '500 GB'], ['Salida de video', 'HDMI 1080p'], ['Firmware', '9.00']],
-    detalles: ['Incluye 1 joystick, cable HDMI y cable de poder', 'Pequeñas marcas de uso en la carcasa'],
-    vendida: false
-  },
-  {
-    nombre: 'PlayStation 3 Super Slim 250GB',
-    precio: '$180.000',
-    estado: 'Usada · Muy buena',
-    carpeta: 'ps3-superslim',
-    cantidad: 4,
-    descripcion: 'PS3 Super Slim con CFW y juegos cargados a pedido.',
-    caracteristicas: ['CFW instalado', 'MultiMAN, webMAN MOD, IRISMAN y Apollo', 'Mantenimiento hecho'],
-    especificaciones: [['Modelo', 'CECH-4001'], ['Almacenamiento', '250 GB']],
-    detalles: ['Incluye joystick y cables'],
-    vendida: false
-  }
-];
-
+/* Tienda AZ TECH: lee consolas/lista.txt y, de cada carpeta, info.txt + fotos 1.jpeg, 2.jpeg... */
 (function(){
   var grid = document.getElementById('tienda-grid');
   if(!grid) return;
 
+  var BASE = 'consolas/', EXTS = ['jpeg','jpg','png','webp'], MAX_FOTOS = 15;
   var WA = 'https://wa.me/5492964574506?text=';
+  var KEYS = ['nombre','precio','estado','vendida','descripcion','caracteristicas','especificaciones','detalles'];
+  var CONSOLAS = [];
 
   function esc(s){
     return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){
       return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
     });
   }
-  function fotosDe(c){
-    if(c.fotos && c.fotos.length) return c.fotos;
+  function norm(s){ return s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim(); }
+  function dir(c){ return BASE + encodeURIComponent(c) + '/'; }
+
+  /* ---------- info.txt -> objeto ---------- */
+  function parsear(txt){
+    var out = {}, key = null;
+    txt.replace(/\r/g, '').split('\n').forEach(function(l){
+      var m = l.match(/^\s*([A-Za-zÁÉÍÓÚÜáéíóúüñÑ]+)\s*:\s*(.*)$/);
+      if(m && KEYS.indexOf(norm(m[1])) > -1){
+        key = norm(m[1]); out[key] = [];
+        if(m[2].trim()) out[key].push(m[2].trim());
+      } else if(key){
+        out[key].push(l.trim());
+      }
+    });
+    var g = function(k){ return (out[k] || []).join('\n').trim(); };
+    var lst = function(k){
+      return (out[k] || []).map(function(s){ return s.replace(/^[-•*]\s*/, '').trim(); }).filter(Boolean);
+    };
+    return {
+      nombre: g('nombre'), precio: g('precio'), estado: g('estado'),
+      vendida: /^(si|true|1|vendida)/.test(norm(g('vendida'))),
+      descripcion: g('descripcion'),
+      caracteristicas: lst('caracteristicas'),
+      especificaciones: lst('especificaciones').map(function(s){
+        var i = s.indexOf(':');
+        return i < 0 ? [s, ''] : [s.slice(0, i).trim(), s.slice(i + 1).trim()];
+      }),
+      detalles: lst('detalles')
+    };
+  }
+
+  /* ---------- fotos 1, 2, 3... (jpeg, jpg, png o webp) ---------- */
+  function probar(src){
+    return new Promise(function(res){
+      var im = new Image();
+      im.onload = function(){ res(src); };
+      im.onerror = function(){ res(null); };
+      im.src = src;
+    });
+  }
+  async function fotosDe(c){
     var a = [];
-    for(var i = 1; i <= (c.cantidad || 1); i++) a.push('fotos/consolas/' + c.carpeta + '/' + i + '.jpeg');
+    for(var i = 1; i <= MAX_FOTOS; i++){
+      var f = null;
+      for(var e = 0; e < EXTS.length && !f; e++) f = await probar(dir(c) + i + '.' + EXTS[e]);
+      if(!f) break;
+      a.push(f);
+    }
     return a;
   }
+
+  async function cargar(){
+    var r = await fetch(BASE + 'lista.txt', {cache:'no-cache'});
+    if(!r.ok) return;
+    var carpetas = (await r.text()).split('\n').map(function(l){ return l.trim(); })
+      .filter(function(l){ return l && l.charAt(0) !== '#'; });
+    var items = await Promise.all(carpetas.map(async function(c){
+      try{
+        var t = await fetch(dir(c) + 'info.txt', {cache:'no-cache'});
+        if(!t.ok) return null;
+        var d = parsear(await t.text());
+        d.fotos = await fotosDe(c);
+        if(!d.nombre) d.nombre = c;
+        return d;
+      }catch(e){ return null; }
+    }));
+    CONSOLAS = items.filter(Boolean);
+  }
+
+  /* ---------- helpers de render ---------- */
   function lista(titulo, items){
-    if(!items || !items.length) return '';
+    if(!items.length) return '';
     return '<div class="tm-sec"><h4>' + titulo + '</h4><ul>' +
       items.map(function(t){ return '<li>' + esc(t) + '</li>'; }).join('') + '</ul></div>';
   }
   function specs(items){
-    if(!items || !items.length) return '';
+    if(!items.length) return '';
     return '<div class="tm-sec"><h4>⚙️ Especificaciones</h4>' +
       items.map(function(p){ return '<div class="tm-spec"><b>' + esc(p[0]) + '</b><span>' + esc(p[1]) + '</span></div>'; }).join('') + '</div>';
   }
 
-  /* ---------- Grilla ---------- */
-  if(!CONSOLAS.length){
-    grid.innerHTML = '<p class="tienda-empty">Por ahora no hay consolas en venta. Escribime por WhatsApp y te aviso cuando entre alguna.</p>';
-    return;
-  }
-  grid.innerHTML = CONSOLAS.map(function(c, i){
-    var f = fotosDe(c);
-    return '<button type="button" class="tc" data-i="' + i + '">' +
-      '<span class="tc-img"><img src="' + esc(f[0]) + '" alt="' + esc(c.nombre) + '" loading="lazy" onerror="this.style.opacity=0">' +
-      (f.length > 1 ? '<span class="tc-multi">▣ ' + f.length + '</span>' : '') +
-      (c.vendida ? '<span class="tc-sold">Vendida</span>' : '') + '</span>' +
-      '<span class="tc-info"><span class="tc-name">' + esc(c.nombre) + '</span><span class="tc-price">' + esc(c.precio) + '</span></span>' +
-      '</button>';
-  }).join('');
-
-  /* ---------- Modal ---------- */
+  /* ---------- modal tipo publicación ---------- */
   var m = document.createElement('div');
   m.className = 'tm';
   m.setAttribute('role', 'dialog');
@@ -111,8 +128,9 @@ var CONSOLAS = [
   }
 
   function abrir(i){
-    var c = CONSOLAS[i], f = fotosDe(c);
+    var c = CONSOLAS[i], f = c.fotos;
     n = f.length;
+    car.style.display = n ? '' : 'none';
     track.innerHTML = f.map(function(s){ return '<img src="' + esc(s) + '" alt="' + esc(c.nombre) + '">'; }).join('');
     dots.innerHTML = n > 1 ? f.map(function(_, k){ return '<button type="button" class="tm-dot" data-k="' + k + '" aria-label="Foto ' + (k + 1) + '"></button>'; }).join('') : '';
     count.style.display = dots.style.display = n > 1 ? '' : 'none';
@@ -153,8 +171,6 @@ var CONSOLAS = [
     if(e.key === 'ArrowLeft') go(idx - 1);
     if(e.key === 'ArrowRight') go(idx + 1);
   });
-
-  // deslizar con el dedo en el celu
   var x0 = null;
   car.addEventListener('touchstart', function(e){ x0 = e.touches[0].clientX; }, {passive:true});
   car.addEventListener('touchend', function(e){
@@ -162,5 +178,24 @@ var CONSOLAS = [
     var dx = e.changedTouches[0].clientX - x0;
     if(Math.abs(dx) > 40) go(idx + (dx < 0 ? 1 : -1));
     x0 = null;
+  });
+
+  /* ---------- arranque ---------- */
+  cargar().then(function(){
+    if(!CONSOLAS.length){
+      grid.innerHTML = '<p class="tienda-empty">Por ahora no hay consolas en venta. Escribime por WhatsApp y te aviso cuando entre alguna.</p>';
+      return;
+    }
+    grid.innerHTML = CONSOLAS.map(function(c, i){
+      var f = c.fotos;
+      return '<button type="button" class="tc" data-i="' + i + '">' +
+        '<span class="tc-img">' + (f.length ? '<img src="' + esc(f[0]) + '" alt="' + esc(c.nombre) + '">' : '') +
+        (f.length > 1 ? '<span class="tc-multi">▣ ' + f.length + '</span>' : '') +
+        (c.vendida ? '<span class="tc-sold">Vendida</span>' : '') + '</span>' +
+        '<span class="tc-info"><span class="tc-name">' + esc(c.nombre) + '</span><span class="tc-price">' + esc(c.precio) + '</span></span>' +
+        '</button>';
+    }).join('');
+  }).catch(function(){
+    grid.innerHTML = '<p class="tienda-empty">No pude cargar las consolas. Probá recargar la página.</p>';
   });
 })();
