@@ -167,73 +167,119 @@
     #intro-splash .intro-logo{ animation:none; opacity:1; }
   }
 
-  /* ---------- NAV ---------- */
+  /* ---------- NAV / ENCABEZADO ---------- */
   header{
     position:sticky; top:0; z-index:100;
     background:var(--cream);
     border-bottom:3px solid var(--ink);
   }
   nav{
-    max-width:1200px; margin:0 auto; padding:16px 24px;
-    display:grid; grid-template-columns:auto 1fr auto; align-items:center; gap:20px;
+    width:100%;
+    max-width:none;
+    margin:0;
+    padding:12px 10px;
+    display:grid;
+    grid-template-columns:auto minmax(0, 1fr) auto;
+    align-items:center;
+    gap:28px;
   }
   .brand{
-    font-family:'Bangers', cursive;
-    font-size:26px;
-    letter-spacing:0.04em;
-    color:var(--ink);
-    display:flex; align-items:center; gap:10px;
-  }
-  .brand .badge-dot{
-    width:16px; height:16px; border-radius:50%;
-    background:var(--orange);
-    border:2px solid var(--ink);
+    display:flex;
+    align-items:center;
+    justify-self:start;
+    min-width:0;
   }
   .brand-logo{
-    height:46px;
+    height:48px;
     width:auto;
+    max-width:160px;
     display:block;
     transition:transform .25s ease;
   }
-  .brand:hover .brand-logo{
-    transform:scale(1.08) rotate(-4deg);
-  }
-  .brand:active .brand-logo{
-    transform:scale(0.94) rotate(2deg);
+  .brand:hover .brand-logo{transform:scale(1.05);}
+  .brand:active .brand-logo{transform:scale(.96);}
+
+  /* El contenido principal queda centrado entre el logo y las redes */
+  .nav-center{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:24px;
+    min-width:0;
   }
   .navlinks{
-    display:flex; gap:26px;
+    display:flex;
+    align-items:center;
     justify-content:center;
+    gap:clamp(12px, 1.6vw, 24px);
     font-family:'Space Mono', monospace;
     font-weight:700;
-    font-size:12px; letter-spacing:0.1em; text-transform:uppercase;
+    font-size:11px;
+    letter-spacing:.06em;
+    text-transform:uppercase;
     color:var(--ink-soft);
+    white-space:nowrap;
   }
   .navlinks a{transition:color .15s;}
   .navlinks a:hover{color:var(--orange);}
+  .auth-area{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    flex-shrink:0;
+  }
   .nav-ctas{
-    display:flex; align-items:center; gap:10px; flex-wrap:wrap; justify-content:flex-end;
+    display:flex;
+    align-items:center;
+    justify-content:flex-end;
+    gap:8px;
+    flex-shrink:0;
   }
   .nav-cta{
     font-family:'Space Mono', monospace;
-    font-weight:700; font-size:12px; letter-spacing:0.06em; text-transform:uppercase;
-    padding:9px 18px;
+    font-weight:700;
+    font-size:11px;
+    letter-spacing:.04em;
+    text-transform:uppercase;
+    padding:9px 12px;
     background:var(--green);
     color:var(--cream-lt);
-    border:2.5px solid var(--ink);
+    border:2px solid var(--ink);
     box-shadow:3px 3px 0 var(--ink);
     transition:transform .12s, box-shadow .12s;
-    display:inline-flex; align-items:center; gap:7px;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:7px;
+    white-space:nowrap;
   }
   .nav-cta:hover{transform:translate(-2px,-2px); box-shadow:5px 5px 0 var(--ink);}
-  .nav-cta.fb{
-    background:var(--fb-blue);
+  .nav-cta.fb{background:var(--fb-blue);}
+  .nav-cta.ig{background:linear-gradient(45deg, #F58529, #DD2A7B, #8134AF, #515BD4);}
+
+  @media (max-width:1100px){
+    nav{gap:16px; padding:12px 10px;}
+    .nav-center{gap:14px;}
+    .navlinks{gap:12px; font-size:10px;}
+    .nav-cta{padding:8px 9px; font-size:10px;}
   }
-  .nav-cta.ig{
-    background:linear-gradient(45deg, #F58529, #DD2A7B, #8134AF, #515BD4);
+  @media (max-width:900px){
+    nav{grid-template-columns:auto minmax(0, 1fr) auto; gap:12px; padding:10px 10px;}
+    .brand-logo{height:42px;}
+    .nav-center{flex-direction:column; gap:8px;}
+    .navlinks{gap:12px;}
+    .auth-area{gap:6px;}
+    .nav-cta{padding:7px 8px; font-size:9px;}
   }
-  @media (max-width:760px){ .navlinks{display:none;} }
-  @media (max-width:480px){ .nav-cta span.txt{display:none;} .nav-cta{padding:9px 12px;} }
+  @media (max-width:650px){
+    nav{grid-template-columns:auto minmax(0, 1fr) auto; gap:12px; padding:10px 8px;}
+    .nav-center{display:none;}
+    .nav-ctas{justify-self:end; gap:7px;}
+    .nav-cta span.txt{display:none;}
+    .nav-cta{width:38px; height:38px; padding:8px; box-shadow:2px 2px 0 var(--ink);}
+    .nav-cta svg{width:16px; height:16px;}
+  }
 
   /* ---------- HERO ---------- */
   .hero{
@@ -903,20 +949,22 @@
 </div>
 
 <header>
-  <nav class="wrap">
+  <nav>
     <a class="brand" href="#" aria-label="Ir al inicio"><img src="logo.svg" class="brand-logo" alt="AZ TECH"></a>
-    <div class="navlinks">
-      <a href="#servicios">Servicios</a>
-      <a href="#detalle">En detalle</a>
-      <a href="#clientes">Clientes</a>
-      <a href="tienda.html">Tienda</a>
-      <a href="pedido.html">Pedir presupuesto</a>
-    </div>
-    <div class="nav-ctas">
+    <div class="nav-center">
+      <div class="navlinks">
+        <a href="#servicios">Servicios</a>
+        <a href="#detalle">En detalle</a>
+        <a href="#clientes">Clientes</a>
+        <a href="tienda.html">Tienda</a>
+        <a href="pedido.html">Pedir presupuesto</a>
+      </div>
       <div class="auth-area" id="auth-area">
         <button type="button" class="nav-cta" id="btn-login-nav">Iniciar sesión</button>
         <button type="button" class="nav-cta auth-register" id="btn-register-nav">Registrarse</button>
       </div>
+    </div>
+    <div class="nav-ctas">
       <a class="nav-cta" href="https://wa.me/5492964574506?text=Hola%20AZ%20TECH!%20Quiero%20consultar%20por%20un%20servicio." target="_blank" rel="noopener">
         <span class="txt">WhatsApp</span>
       </a>
