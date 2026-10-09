@@ -894,6 +894,7 @@
   @media (prefers-reduced-motion: reduce){ *{transition:none !important;} }
   a:focus-visible, button:focus-visible{outline:3px solid var(--orange); outline-offset:3px;}
 </style>
+<link rel="stylesheet" href="consolas.css">
 </head>
 <body>
 
@@ -909,6 +910,7 @@
       <a href="#servicios">Servicios</a>
       <a href="#detalle">En detalle</a>
       <a href="#proceso">Cómo trabajo</a>
+      <a href="#tienda">Tienda</a>
       <a href="#faq">FAQ</a>
       <a href="#sobre-mi">Sobre mí</a>
       <a href="#clientes">Clientes</a>
@@ -1104,6 +1106,17 @@
         <p>Trabajo solo con tu autorización, nada extra sin avisar.</p>
       </div>
     </div>
+  </div>
+</section>
+
+<section class="tienda" id="tienda">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow">Tienda</div>
+      <h2>Consolas en venta.</h2>
+      <p>Tocá una para ver todas las fotos, el precio y los detalles.</p>
+    </div>
+    <div class="tienda-grid" id="tienda-grid"></div>
   </div>
 </section>
 
@@ -1405,6 +1418,7 @@
   </div>
 </div>
 
+<script src="consolas.js" defer></script>
 <script type="module" src="firebase-config.js"></script>
 <script type="module" src="resenas.js"></script>
 
