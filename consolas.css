@@ -71,7 +71,7 @@
 .tm-body h3{font-size:28px; margin-top:8px; color:var(--ink); line-height:1.1;}
 .tm-sec{margin-top:22px;}
 .tm-sec h4{font-family:'Bangers',cursive; font-weight:400; font-size:20px; letter-spacing:.02em; color:var(--ink); margin-bottom:6px;}
-.tm-sec p{font-size:15px; color:var(--ink-soft); line-height:1.7;}
+.tm-sec p{white-space:pre-line; font-size:15px; color:var(--ink-soft); line-height:1.7;}
 .tm-sec ul li{position:relative; padding-left:18px; font-size:15px; color:var(--ink-soft); line-height:1.7;}
 .tm-sec ul li::before{content:"▸"; position:absolute; left:0; color:var(--orange); font-weight:700;}
 .tm-spec{display:flex; justify-content:space-between; gap:16px; padding:9px 0; border-bottom:2px dashed var(--ink-soft); font-size:14.5px;}
