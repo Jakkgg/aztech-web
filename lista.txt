@@ -1,0 +1,4 @@
+# Una carpeta por línea. Las líneas con # se ignoran.
+# La primera de la lista es la primera que se ve en la página.
+# Ejemplo: si creás la carpeta consolas/ps4-slim, escribí abajo:  ps4-slim
+

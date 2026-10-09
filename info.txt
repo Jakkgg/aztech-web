@@ -1,0 +1,26 @@
+Copiá esta carpeta, cambiale el nombre (sin espacios ni tildes, ej: ps4-slim)
+y editá los datos. Todo lo que escribas antes de "nombre:" se ignora.
+
+nombre: PlayStation 4 Slim 500GB
+precio: $250.000
+estado: Usada · Excelente
+vendida: no
+
+descripcion:
+PS4 Slim revisada por dentro, con limpieza completa y pasta térmica nueva.
+Funciona perfecto y está lista para jugar.
+
+caracteristicas:
+- Liberada con GoldHEN
+- Limpieza interna y pasta térmica nueva
+- Lectora funcionando perfecto
+
+especificaciones:
+Modelo: CUH-2215A
+Almacenamiento: 500 GB
+Salida de video: HDMI 1080p
+Firmware: 9.00
+
+detalles:
+- Incluye 1 joystick, cable HDMI y cable de poder
+- Pequeñas marcas de uso en la carcasa
