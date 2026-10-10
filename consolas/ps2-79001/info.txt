@@ -1,0 +1,25 @@
+nombre: PlayStation 2 Slim SCPH-79001
+precio: $80.000
+estado: Usada · Digital
+vendida: no
+Modelo: SCPH-79001
+
+Descripción:
+PS2 Slim Digital con limpieza interna completa.
+No tiene lectora, funciona mediante pendrive y MC con OPL.
+
+Características:
+- Limpieza interna completa
+- Sin lectora
+- Chipeada
+
+Incluye:
+Pendrive: 32GB (6 juegos)
+Joystick: (1)
+Cable de alimentacion: 8.5V
+Cable de video: AV
+Memory card: 16 MB
+
+detalles:
+- Incluye joystick, cable AV y cable de poder
+- Se descartó la lectora
