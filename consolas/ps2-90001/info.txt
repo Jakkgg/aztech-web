@@ -8,8 +8,8 @@ vendida: no
 Modelo: CECH-4011B
 
 Descripción:
-PS2 Slim Digital con limpieza interna completa.
-No tiene lectora, funciona mediante pendrive y MC con OPL.
+PS3 SuperSlim Digital con limpieza interna completa.
+No tiene lectora, tiene 20 juegos instalados, 5 tiendas y varios programas. Hen 4.93 ultima version.
 
 Características:
 - Limpieza interna completa
