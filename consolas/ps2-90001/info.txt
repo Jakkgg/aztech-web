@@ -25,3 +25,4 @@ Memory Card: no
 detalles:
 - Incluye joystick, cable AV y cable de poder
 - La lectora aveces no lee la primera vez, a la segunda funciona perfectamente.
+
