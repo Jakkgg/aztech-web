@@ -22,6 +22,7 @@
     --green-dk:#354A39;
     --paper:#F1E6D2;
     --fb-blue:#1877F2;
+    --fb-blue-dk:#0F5AC7;
   }
 
   *{box-sizing:border-box; margin:0; padding:0;}
@@ -68,13 +69,88 @@
     letter-spacing:0.02em;
   }
 
+  /* thick-border comic card mixin via class */
   .ink-card{
     border:3px solid var(--ink);
     box-shadow:7px 7px 0 var(--ink);
     background:var(--paper);
   }
 
-  /* ---------- NAV (idéntico al de index) ---------- */
+  /* ==================================================================
+     INTRO SPLASH — rápida: fondo naranja girando + logo que aparece
+     chiquito, pega un salto grande, y se achica de nuevo. Todo en
+     poco más de un segundo.
+     ================================================================== */
+  #intro-splash{
+    position:fixed;
+    inset:0;
+    z-index:9999;
+    background:var(--orange);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    overflow:hidden;
+    animation: introOut .3s ease forwards;
+    animation-delay:1.05s;
+  }
+  #intro-splash .spin-bg{
+    position:absolute;
+    width:260vmax;
+    height:260vmax;
+    left:50%; top:50%;
+    margin-left:-130vmax;
+    margin-top:-130vmax;
+    background:
+      repeating-conic-gradient(
+        var(--ink) 0deg 12deg,
+        transparent 12deg 30deg
+      );
+    opacity:0.16;
+    animation: spinBg 1.3s cubic-bezier(.3,0,.4,1) forwards;
+  }
+  @keyframes spinBg{
+    0%{   transform:rotate(0deg)   scale(0.3); opacity:0; }
+    12%{  opacity:.16; }
+    100%{ transform:rotate(650deg) scale(1);   opacity:.16; }
+  }
+
+  #intro-splash .intro-logo{
+    position:relative;
+    z-index:2;
+    width:min(50vw, 280px);
+    height:auto;
+    opacity:0;
+    filter:drop-shadow(0 8px 0 rgba(0,0,0,0.25));
+    animation: logoBeat 1.1s cubic-bezier(.37,0,.63,1) forwards;
+  }
+
+  @keyframes logoBeat{
+    0%{   transform:scale(0.12); opacity:0; }
+    12%{  opacity:1; }
+    50%{  transform:scale(1.3);  opacity:1; }
+    88%{  opacity:1; }
+    100%{ transform:scale(0.12); opacity:0; }
+  }
+
+  @keyframes introOut{
+    0%{   opacity:1; visibility:visible; }
+    100%{ opacity:0; visibility:hidden; pointer-events:none; }
+  }
+
+  #intro-splash.skip-now{
+    animation: introOut .3s ease forwards !important;
+    animation-delay:0s !important;
+  }
+  #intro-splash.skip-now .intro-logo,
+  #intro-splash.skip-now .spin-bg{ animation:none; opacity:0; }
+
+  @media (prefers-reduced-motion: reduce){
+    #intro-splash{ animation:introOut .01s linear forwards; animation-delay:0s; }
+    #intro-splash .spin-bg{ display:none; }
+    #intro-splash .intro-logo{ animation:none; opacity:1; }
+  }
+
+  /* ---------- NAV ---------- */
   header{
     position:sticky; top:0; z-index:100;
     background:var(--cream);
@@ -91,254 +167,787 @@
     color:var(--ink);
     display:flex; align-items:center; gap:10px;
   }
-  .brand-logo{ height:46px; width:auto; display:block; transition:transform .25s ease; }
-  .brand:hover .brand-logo{ transform:scale(1.08) rotate(-4deg); }
+  .brand .badge-dot{
+    width:16px; height:16px; border-radius:50%;
+    background:var(--orange);
+    border:2px solid var(--ink);
+  }
+  .brand-logo{
+    height:46px;
+    width:auto;
+    display:block;
+    transition:transform .25s ease;
+  }
+  .brand:hover .brand-logo{
+    transform:scale(1.08) rotate(-4deg);
+  }
+  .brand:active .brand-logo{
+    transform:scale(0.94) rotate(2deg);
+  }
   .navlinks{
-    display:flex; gap:26px; justify-content:center;
-    font-family:'Space Mono', monospace; font-weight:700;
+    display:flex; gap:26px;
+    justify-content:center;
+    font-family:'Space Mono', monospace;
+    font-weight:700;
     font-size:12px; letter-spacing:0.1em; text-transform:uppercase;
     color:var(--ink-soft);
   }
   .navlinks a{transition:color .15s;}
-  .navlinks a:hover, .navlinks a.current{color:var(--orange);}
-  .nav-ctas{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; justify-content:flex-end; }
+  .navlinks a:hover{color:var(--orange);}
+  .nav-ctas{
+    display:flex; align-items:center; gap:10px; flex-wrap:wrap; justify-content:flex-end;
+  }
   .nav-cta{
-    font-family:'Space Mono', monospace; font-weight:700; font-size:12px;
-    letter-spacing:0.06em; text-transform:uppercase;
-    padding:9px 18px; background:var(--green); color:var(--cream-lt);
-    border:2.5px solid var(--ink); box-shadow:3px 3px 0 var(--ink);
+    font-family:'Space Mono', monospace;
+    font-weight:700; font-size:12px; letter-spacing:0.06em; text-transform:uppercase;
+    padding:9px 18px;
+    background:var(--green);
+    color:var(--cream-lt);
+    border:2.5px solid var(--ink);
+    box-shadow:3px 3px 0 var(--ink);
     transition:transform .12s, box-shadow .12s;
     display:inline-flex; align-items:center; gap:7px;
   }
   .nav-cta:hover{transform:translate(-2px,-2px); box-shadow:5px 5px 0 var(--ink);}
-  .nav-cta.fb{ background:var(--fb-blue); }
-  .nav-cta.ig{ background:linear-gradient(45deg, #F58529, #DD2A7B, #8134AF, #515BD4); }
+  .nav-cta.fb{
+    background:var(--fb-blue);
+  }
+  .nav-cta.ig{
+    background:linear-gradient(45deg, #F58529, #DD2A7B, #8134AF, #515BD4);
+  }
   @media (max-width:760px){ .navlinks{display:none;} }
   @media (max-width:480px){ .nav-cta span.txt{display:none;} .nav-cta{padding:9px 12px;} }
 
-  /* ---------- HERO chica ---------- */
-  .pedido-hero{
-    padding:56px 0 40px;
+  /* ---------- HERO ---------- */
+  .hero{
+    position:relative;
+
+    display:flex;
+    justify-content:center;
+    align-items:flex-start;
+    padding:24px 0 90px;
+
     text-align:center;
+    overflow:hidden;
+
     background:
       radial-gradient(circle at 12% 20%, rgba(217,120,47,.12), transparent 40%),
       radial-gradient(circle at 88% 75%, rgba(78,104,81,.14), transparent 45%),
       var(--cream);
   }
-  .pedido-hero .hero-sticker{
-    display:inline-block;
-    font-family:'Space Mono', monospace; font-weight:700; font-size:12px;
-    letter-spacing:0.14em; text-transform:uppercase;
-    background:var(--orange); color:var(--cream-lt);
-    padding:9px 18px; border:2.5px solid var(--ink); box-shadow:4px 4px 0 var(--ink);
-    transform:rotate(-3deg); margin-bottom:20px;
-  }
-  .pedido-hero h1{
-    font-size:clamp(38px, 7vw, 68px); color:var(--orange);
-    -webkit-text-stroke:2px var(--ink); text-shadow:5px 5px 0 var(--ink-soft);
-  }
-  .pedido-hero p{
-    max-width:560px; margin:20px auto 0; font-size:17px; color:var(--ink-soft); line-height:1.6;
-  }
-
-  /* ---------- FORM LAYOUT ---------- */
-  .pedido-main{ padding:20px 0 100px; }
-  .pedido-grid{
-    display:grid;
-    grid-template-columns:1.3fr 0.9fr;
-    gap:36px;
-    align-items:start;
-  }
-  @media (max-width:940px){ .pedido-grid{grid-template-columns:1fr;} }
-
-  .form-panel{ padding:32px; }
-  .form-section{ margin-bottom:34px; }
-  .form-section:last-child{ margin-bottom:0; }
-  .form-section h2{
-    font-size:24px; color:var(--ink); margin-bottom:6px;
-  }
-  .form-section .fs-sub{
-    font-size:13.5px; color:var(--ink-soft); margin-bottom:16px; line-height:1.5;
-  }
-  .fs-num{
-    display:inline-flex; align-items:center; justify-content:center;
-    width:26px; height:26px; border-radius:50%;
-    background:var(--orange); color:var(--cream-lt);
-    font-family:'Space Mono', monospace; font-weight:700; font-size:13px;
-    margin-right:8px; vertical-align:middle;
-  }
-
-  .rf-label{
-    display:block; font-family:'Space Mono', monospace; font-weight:700;
-    font-size:11.5px; letter-spacing:0.08em; text-transform:uppercase;
-    color:var(--ink-soft); margin:16px 0 6px;
-  }
-  .rf-label:first-of-type{ margin-top:0; }
-  .rf-input, select.rf-input{
-    width:100%; font-family:'Space Grotesk', sans-serif; font-size:15px; color:var(--ink);
-    background:var(--cream-lt); border:2.5px solid var(--ink); padding:11px 14px; resize:vertical;
-  }
-  .rf-input:focus{ outline:3px solid var(--orange); outline-offset:1px; }
-  .rf-hint{ font-size:12px; color:var(--ink-soft); margin-top:6px; line-height:1.5; }
-
-  /* checkbox tiles */
-  .opt-grid{ display:grid; grid-template-columns:repeat(2,1fr); gap:12px; }
-  @media (max-width:520px){ .opt-grid{grid-template-columns:1fr;} }
-  .opt-tile{
+  .hero .wrap{
     position:relative;
+    z-index:2;
+
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+  }
+  .hero .burst{
+    position:absolute; top:-120px; left:50%; transform:translateX(-50%);
+    width:640px; height:640px;
+    background:
+      repeating-conic-gradient(var(--ink) 0deg 4deg, transparent 4deg 16deg);
+    opacity:0.06;
+    border-radius:50%;
+    pointer-events:none;
+  }
+  .hero-sticker{
+    position:relative; z-index:2;
+    display:inline-block;
+    font-family:'Space Mono', monospace;
+    font-weight:700;
+    font-size:12px;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    background:var(--orange);
+    color:var(--cream-lt);
+    padding:9px 18px;
     border:2.5px solid var(--ink);
-    background:var(--cream-lt);
-    padding:14px 16px;
-    cursor:pointer;
-    transition:transform .12s, box-shadow .12s, background .12s;
+    box-shadow:4px 4px 0 var(--ink);
+    transform:rotate(-3deg);
+    margin-bottom:22px;
   }
-  .opt-tile:hover{ transform:translate(-2px,-2px); box-shadow:4px 4px 0 var(--ink); }
-  .opt-tile input{ position:absolute; opacity:0; pointer-events:none; }
-  .opt-tile .opt-top{ display:flex; justify-content:space-between; align-items:center; gap:10px; }
-  .opt-tile .opt-name{ font-weight:700; font-size:14.5px; color:var(--ink); }
-  .opt-tile .opt-price{
-    font-family:'Space Mono', monospace; font-weight:700; font-size:12.5px; color:var(--orange-dk);
-    white-space:nowrap;
+  .hero h1{
+    position:relative; z-index:2;
+    font-size:clamp(58px, 12vw, 128px);
+    line-height:0.9;
+    color:var(--orange);
+    -webkit-text-stroke:2px var(--ink);
+    text-shadow:
+      6px 6px 0 var(--ink-soft);
   }
-  .opt-tile .opt-desc{ font-size:12.5px; color:var(--ink-soft); margin-top:4px; line-height:1.5; }
-  .opt-tile.checked{
-    background:var(--green); box-shadow:4px 4px 0 var(--ink);
+  .hero .sub{
+    position:relative; z-index:2;
+    margin-top:26px;
+    font-family:'Space Mono', monospace;
+    font-weight:700;
+    font-size:14px;
+    letter-spacing:0.3em;
+    text-transform:uppercase;
+    color:var(--green-dk);
   }
-  .opt-tile.checked .opt-name, .opt-tile.checked .opt-desc{ color:var(--cream-lt); }
-  .opt-tile.checked .opt-price{ color:var(--cream-lt); }
-  .opt-tile .opt-check{
-    width:18px; height:18px; border:2px solid var(--ink); background:var(--cream-lt);
-    display:inline-flex; align-items:center; justify-content:center; flex-shrink:0;
-    font-size:12px; font-weight:700; color:var(--green);
+  .hero p.lead{
+    position:relative; z-index:2;
+    max-width:540px; margin:36px auto 0;
+    font-size:19px; color:var(--ink-soft); line-height:1.55;
   }
-  .opt-tile.checked .opt-check{ background:var(--cream-lt); }
-  .opt-tile.checked .opt-check::after{ content:"✓"; }
-
-  /* sub-opciones (radios de modelo, GB, etc.) */
-  .sub-opts{
-    margin-top:14px; padding:16px; background:var(--paper);
-    border:2px dashed var(--ink-soft);
-    display:none;
+  .hero .ctas{
+    position:relative; z-index:2;
+    margin-top:22px;
+    display:flex; gap:18px; justify-content:center; flex-wrap:wrap;
   }
-  .sub-opts.visible{ display:block; }
-  .sub-opts .rf-label{ margin-top:0; }
-  .radio-row{ display:flex; flex-wrap:wrap; gap:10px; margin-top:6px; }
-  .radio-chip{
-    font-family:'Space Mono', monospace; font-size:12.5px; font-weight:700;
-    padding:9px 14px; border:2px solid var(--ink); background:var(--cream-lt);
-    cursor:pointer; display:inline-flex; align-items:center; gap:8px;
-  }
-  .radio-chip input{ accent-color:var(--orange); }
-  .radio-chip.checked{ background:var(--orange); color:var(--cream-lt); }
-
-  .gb-row{ display:flex; align-items:center; gap:12px; margin-top:6px; }
-  .gb-row input[type=range]{ flex:1; accent-color:var(--orange); }
-  .gb-out{
-    font-family:'Space Mono', monospace; font-weight:700; font-size:14px;
-    background:var(--ink); color:var(--cream-lt); padding:6px 12px; min-width:64px; text-align:center;
-  }
-
-  /* repuestos dinámicos */
-  .repuesto-row{
-    display:grid; grid-template-columns:1fr 110px 34px; gap:8px; margin-bottom:8px; align-items:center;
-  }
-  .repuesto-row input{
-    font-family:'Space Grotesk', sans-serif; font-size:14px; color:var(--ink);
-    background:var(--cream-lt); border:2px solid var(--ink); padding:9px 10px;
-  }
-  .repuesto-row .rm-btn{
-    width:34px; height:34px; border:2px solid var(--ink); background:var(--cream-lt);
-    color:var(--ink); font-weight:700; cursor:pointer; font-size:16px; line-height:1;
-  }
-  .rm-btn:hover{ background:var(--orange); color:var(--cream-lt); }
-  .add-repuesto{
-    margin-top:6px;
-    font-family:'Space Mono', monospace; font-weight:700; font-size:12.5px; letter-spacing:0.05em;
-    text-transform:uppercase; padding:9px 16px; background:var(--cream-lt);
-    border:2px solid var(--ink); cursor:pointer; display:inline-flex; align-items:center; gap:6px;
-  }
-  .add-repuesto:hover{ background:var(--orange); color:var(--cream-lt); }
-
-  textarea.rf-input{ min-height:96px; }
-
-  .submit-btn{
-    width:100%; justify-content:center; margin-top:8px;
-    font-family:'Space Mono', monospace; font-weight:700; font-size:14px;
-    letter-spacing:0.08em; text-transform:uppercase;
-    padding:18px 30px; background:var(--green); color:var(--cream-lt);
-    border:3px solid var(--ink); box-shadow:5px 5px 0 var(--ink);
-    display:flex; align-items:center; gap:10px;
+  .btn-primary{
+    font-family:'Space Mono', monospace;
+    font-weight:700; font-size:13.5px; letter-spacing:0.08em; text-transform:uppercase;
+    padding:17px 32px;
+    background:var(--orange);
+    color:var(--cream-lt);
+    border:3px solid var(--ink);
+    box-shadow:5px 5px 0 var(--ink);
+    display:inline-flex; align-items:center; gap:10px;
     transition:transform .12s, box-shadow .12s;
-    cursor:pointer;
   }
-  .submit-btn:hover{ transform:translate(-3px,-3px); box-shadow:8px 8px 0 var(--ink); }
-  .submit-note{ font-size:12px; color:var(--ink-soft); margin-top:12px; line-height:1.5; text-align:center; }
-  .form-error{
-    display:none; margin-top:12px; font-family:'Space Mono', monospace; font-size:12.5px;
-    color:#B0413E; background:var(--cream-lt); border:2px solid #B0413E; padding:10px 12px;
+  .btn-primary:hover{transform:translate(-3px,-3px); box-shadow:8px 8px 0 var(--ink);}
+  .btn-ghost{
+    font-family:'Space Mono', monospace;
+    font-weight:700; font-size:13.5px; letter-spacing:0.08em; text-transform:uppercase;
+    padding:17px 32px;
+    background:var(--cream-lt);
+    color:var(--ink);
+    border:3px solid var(--ink);
+    box-shadow:5px 5px 0 var(--ink);
+    transition:transform .12s, box-shadow .12s;
+  }
+  .btn-ghost:hover{transform:translate(-3px,-3px); box-shadow:8px 8px 0 var(--ink);}
+
+  /* ---------- SECTION shared ---------- */
+  section{padding:96px 0;}
+  .sec-head{max-width:640px; margin-bottom:52px;}
+  .sec-head h2{
+    font-size:clamp(34px,5.5vw,52px);
+    margin-top:12px;
+    color:var(--ink);
+  }
+  .sec-head p{margin-top:14px; font-size:17px; color:var(--ink-soft); line-height:1.6;}
+
+  /* ---------- SERVICES ---------- */
+  .services{background:var(--cream-dk); border-top:3px solid var(--ink); border-bottom:3px solid var(--ink);}
+  .svc-grid{
+    display:grid; grid-template-columns:repeat(4,1fr); gap:24px;
+  }
+  @media (max-width:900px){ .svc-grid{grid-template-columns:repeat(2,1fr);} }
+  @media (max-width:520px){ .svc-grid{grid-template-columns:1fr;} }
+
+  .svc-card{
+    padding:30px 24px;
+    position:relative;
+    transition:transform .15s, box-shadow .15s;
+  }
+  .svc-card:hover{transform:translate(-3px,-3px); box-shadow:10px 10px 0 var(--ink);}
+  .svc-num{
+    font-family:'Space Mono', monospace; font-weight:700;
+    font-size:11px; color:var(--orange); letter-spacing:0.1em;
+  }
+  .svc-icon{margin:16px 0 14px; color:var(--ink);}
+  .svc-card h3{font-size:24px; color:var(--ink); text-transform:uppercase;}
+  .svc-card p{margin-top:8px; font-size:14.5px; color:var(--ink-soft); line-height:1.55;}
+
+  /* ---------- SPOTLIGHT: PlayStation ---------- */
+  .spotlight{
+    position:relative;
+    background:var(--cream);
+  }
+  .spot-grid{
+    display:grid; grid-template-columns:0.9fr 1.1fr; gap:56px; align-items:start;
+  }
+  @media (max-width:860px){ .spot-grid{grid-template-columns:1fr;} }
+
+  .spot-left h2{font-size:clamp(30px,4.8vw,46px); color:var(--ink); margin-top:12px; line-height:1.02;}
+  .spot-left p{margin-top:16px; color:var(--ink-soft); font-size:16.5px; line-height:1.65;}
+
+  .speech-bubble{
+    position:relative;
+    margin-top:28px;
+    background:var(--green);
+    color:var(--cream-lt);
+    padding:20px 22px;
+    border:3px solid var(--ink);
+    box-shadow:5px 5px 0 var(--ink);
+    font-family:'Space Mono', monospace;
+    font-size:13.5px;
+    line-height:1.65;
+    border-radius:14px;
+  }
+  .speech-bubble::after{
+    content:"";
+    position:absolute; left:36px; bottom:-16px;
+    width:0; height:0;
+    border:10px solid transparent;
+    border-top-color:var(--ink);
+    border-bottom:0;
+  }
+  .speech-bubble::before{
+    content:"";
+    position:absolute; left:38px; bottom:-11px;
+    width:0; height:0;
+    border:8px solid transparent;
+    border-top-color:var(--green);
+    border-bottom:0;
+    z-index:1;
   }
 
-  /* ---------- TICKET (resumen en vivo) ---------- */
-  .ticket-wrap{ position:sticky; top:100px; }
-  .ticket{
+  .card-panel{background:var(--paper); border:3px solid var(--ink); box-shadow:8px 8px 0 var(--ink);}
+  .card-panel .cp-head{
+    padding:16px 22px;
+    border-bottom:3px solid var(--ink);
+    background:var(--orange);
+    display:flex; align-items:center; gap:10px;
+  }
+  .card-panel .cp-head .dot{width:9px;height:9px;border-radius:50%;background:var(--cream-lt); border:1.5px solid var(--ink);}
+  .card-panel .cp-head span{
+    font-family:'Space Mono', monospace; font-weight:700;
+    font-size:12px; letter-spacing:0.14em; text-transform:uppercase; color:var(--cream-lt);
+  }
+  .cp-body{padding:26px 26px 30px;}
+  .cp-block{margin-bottom:24px;}
+  .cp-block:last-child{margin-bottom:0;}
+  .cp-block h4{
+    font-family:'Bangers', cursive;
+    font-size:20px; letter-spacing:0.02em; color:var(--ink); margin-bottom:8px;
+  }
+  .cp-block ul li{position:relative; padding-left:18px; font-size:15px; color:var(--ink-soft); line-height:1.7;}
+  .cp-block ul li::before{content:"▸"; position:absolute; left:0; top:0; color:var(--orange); font-weight:700;}
+  .cp-block p{font-size:15px; color:var(--ink-soft); line-height:1.7;}
+
+  /* ---------- PROCESS ---------- */
+  .process{background:var(--green); border-top:3px solid var(--ink); border-bottom:3px solid var(--ink);}
+  .process .eyebrow{color:var(--cream-lt);}
+  .process .eyebrow::before{color:var(--cream-lt);}
+  .process .sec-head h2{color:var(--cream-lt);}
+  .proc-list{display:grid; grid-template-columns:repeat(4,1fr); gap:26px;}
+  @media (max-width:860px){ .proc-list{grid-template-columns:repeat(2,1fr);} }
+  @media (max-width:520px){ .proc-list{grid-template-columns:1fr;} }
+  .proc-item{
     background:var(--cream-lt);
     border:3px solid var(--ink);
-    box-shadow:8px 8px 0 var(--ink);
-    font-family:'Space Mono', monospace;
-    position:relative;
+    box-shadow:5px 5px 0 var(--ink);
+    padding:22px;
   }
-  .ticket-head{
-    background:var(--ink); color:var(--cream-lt);
-    padding:18px 22px;
+  .proc-item .pn{
+    font-family:'Bangers', cursive;
+    font-size:42px;
+    color:var(--orange);
+    line-height:1;
+  }
+  .proc-item h3{margin-top:10px; font-size:19px; color:var(--ink); text-transform:uppercase;}
+  .proc-item p{margin-top:8px; font-size:14.5px; color:var(--ink-soft); line-height:1.55;}
+
+  /* ---------- FAQ ---------- */
+  .faq{background:var(--cream); border-top:3px solid var(--ink); border-bottom:3px solid var(--ink);}
+  .faq-grid{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:52px 40px;
+  }
+  @media (max-width:760px){ .faq-grid{grid-template-columns:1fr; gap:46px;} }
+
+  .faq-item{display:flex; flex-direction:column;}
+  .faq-q{
+    align-self:flex-start;
+    font-family:'Space Mono', monospace;
+    font-weight:700;
+    font-size:12.5px;
+    letter-spacing:0.05em;
+    text-transform:uppercase;
+    background:var(--orange);
+    color:var(--cream-lt);
+    padding:11px 18px;
+    border:2.5px solid var(--ink);
+    box-shadow:4px 4px 0 var(--ink);
+    transform:rotate(-1.4deg);
+    max-width:88%;
+  }
+  .faq-a{
+    position:relative;
+    align-self:flex-end;
+    max-width:92%;
+    margin-top:14px;
+    background:var(--paper);
+    border:3px solid var(--ink);
+    box-shadow:6px 6px 0 var(--ink);
+    border-radius:20px;
+    padding:20px 24px;
+    font-size:15px;
+    color:var(--ink-soft);
+    line-height:1.65;
+  }
+  .faq-a::after{
+    content:"";
+    position:absolute; left:30px; top:-15px;
+    width:0; height:0;
+    border:9px solid transparent;
+    border-bottom-color:var(--ink);
+    border-top:0;
+  }
+  .faq-a::before{
+    content:"";
+    position:absolute; left:32px; top:-10px;
+    width:0; height:0;
+    border:7px solid transparent;
+    border-bottom-color:var(--paper);
+    border-top:0;
+    z-index:1;
+  }
+  .faq-item:nth-child(even) .faq-q{
+    background:var(--green);
+    align-self:flex-end;
+    transform:rotate(1.4deg);
+  }
+  .faq-item:nth-child(even) .faq-a{
+    align-self:flex-start;
+  }
+  .faq-item:nth-child(even) .faq-a::after{
+    left:auto; right:30px;
+  }
+  .faq-item:nth-child(even) .faq-a::before{
+    left:auto; right:32px;
+  }
+
+  /* ---------- ABOUT ---------- */
+  .about-grid{display:grid; grid-template-columns:1fr 1fr; gap:56px; align-items:center;}
+  @media (max-width:860px){ .about-grid{grid-template-columns:1fr;} }
+  .about-copy p{font-size:16.5px; color:var(--ink-soft); line-height:1.7; margin-bottom:16px;}
+  .about-copy strong{color:var(--ink); font-weight:700;}
+
+  .polaroid{
+    display:inline-block;
+    background:var(--cream-lt);
+    border:3px solid var(--ink);
+    box-shadow:6px 6px 0 var(--ink);
+    padding:10px 10px 16px;
+    transform:rotate(-2.5deg);
+    margin-bottom:26px;
+  }
+  .polaroid img{
+    display:block;
+    width:150px; height:150px;
+    object-fit:cover;
+    border:2px solid var(--ink);
+  }
+  .polaroid .cap{
+    margin-top:10px;
+    font-family:'Space Mono', monospace;
+    font-weight:700;
+    font-size:11.5px;
+    letter-spacing:0.04em;
+    text-align:center;
+    color:var(--ink-soft);
+  }
+
+  .stat-panel{background:var(--paper); border:3px solid var(--ink); box-shadow:8px 8px 0 var(--ink); padding:32px;}
+  .stat-row{display:flex; justify-content:space-between; padding:15px 0; border-bottom:2px dashed var(--ink-soft);}
+  .stat-row:last-child{border-bottom:none;}
+  .stat-row .label{
+    font-family:'Space Mono', monospace; font-weight:700;
+    font-size:12px; letter-spacing:0.06em; text-transform:uppercase; color:var(--ink-soft);
+  }
+  .stat-row .value{font-family:'Bangers', cursive; font-size:18px; color:var(--ink); text-align:right;}
+
+  /* ---------- CLIENTES ---------- */
+  .clientes{
+    background:var(--green);
+    border-top:3px solid var(--ink);
+    border-bottom:3px solid var(--ink);
+  }
+  .clientes .eyebrow{color:var(--cream-lt);}
+  .clientes .eyebrow::before{color:var(--cream-lt);}
+  .clientes .sec-head h2{color:var(--cream-lt);}
+  .clientes .sec-head p{color:var(--cream-dk);}
+  .clientes-grid{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:20px;
+  }
+  @media (max-width:860px){ .clientes-grid{grid-template-columns:repeat(2,1fr);} }
+  @media (max-width:520px){ .clientes-grid{grid-template-columns:1fr;} }
+  .cl-tile{
+    aspect-ratio:1/1;
+    background:var(--cream-lt);
+    border:3px solid var(--ink);
+    box-shadow:5px 5px 0 var(--ink);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    color:var(--ink-soft);
+    text-align:center;
+    padding:14px;
+  }
+  .cl-tile.filled{padding:0; overflow:hidden; position:relative; cursor:pointer;}
+  .cl-tile.filled img{width:100%; height:100%; object-fit:cover; display:block; transition:transform .3s ease, filter .3s ease;}
+  .cl-tile.filled:hover img{transform:scale(1.08); filter:brightness(.75);}
+  .cl-tile.filled::after{
+    content:"🔍 Ver foto";
+    position:absolute; inset:0;
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Space Mono', monospace;
+    font-weight:700;
+    font-size:12px;
+    letter-spacing:0.06em;
+    text-transform:uppercase;
+    color:var(--cream-lt);
+    text-shadow:0 1px 3px rgba(0,0,0,.6);
+    opacity:0;
+    transition:opacity .3s ease;
+    pointer-events:none;
+  }
+  .cl-tile.filled:hover::after{opacity:1;}
+
+  /* ---------- LIGHTBOX ---------- */
+  #lightbox{
+    position:fixed; inset:0; z-index:2000;
+    background:rgba(27,23,18,0.92);
+    display:none;
+    align-items:center; justify-content:center;
+    padding:40px 20px;
+    cursor:zoom-out;
+  }
+  #lightbox.open{display:flex;}
+  #lightbox img{
+    max-width:min(900px, 92vw);
+    max-height:86vh;
+    object-fit:contain;
+    border:3px solid var(--cream-lt);
+    box-shadow:0 20px 60px rgba(0,0,0,.5);
+    cursor:default;
+  }
+  #lightbox .lb-close{
+    position:absolute;
+    top:22px; right:26px;
+    width:42px; height:42px;
+    border-radius:50%;
+    background:var(--cream-lt);
+    border:2px solid var(--ink);
+    color:var(--ink);
+    font-family:'Space Mono', monospace;
+    font-size:18px;
+    font-weight:700;
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer;
+  }
+  .cl-tile .plus{
+    font-family:'Bangers', cursive;
+    font-size:34px;
+    color:var(--green-dk);
+    line-height:1;
+  }
+  .cl-tile .cl-label{
+    font-family:'Space Mono', monospace;
+    font-weight:700;
+    font-size:11px;
+    letter-spacing:0.06em;
+    text-transform:uppercase;
+  }
+
+  /* ---------- RESEÑAS ---------- */
+  .resenas{background:var(--cream); border-top:3px solid var(--ink); border-bottom:3px solid var(--ink);}
+  .resenas-layout{
+    display:grid;
+    grid-template-columns:1.1fr 0.9fr;
+    gap:40px;
+    align-items:start;
+  }
+  @media (max-width:900px){ .resenas-layout{grid-template-columns:1fr;} }
+
+  .resenas-grid{
+    display:flex;
+    flex-direction:column;
+    gap:20px;
+  }
+  .resena-card{
+    background:var(--paper);
+    border:3px solid var(--ink);
+    box-shadow:6px 6px 0 var(--ink);
+    padding:22px 24px;
+  }
+  .resena-card .rc-top{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    flex-wrap:wrap;
+  }
+  .resena-card .rc-name{
+    font-family:'Bangers', cursive;
+    font-size:19px;
+    color:var(--ink);
+  }
+  .resena-card .rc-stars{
+    font-size:16px;
+    letter-spacing:2px;
+    color:var(--cream-dk);
+  }
+  .resena-card .rc-stars .on{ color:var(--orange); }
+  .resena-card .rc-text{
+    margin-top:10px;
+    font-size:15px;
+    color:var(--ink-soft);
+    line-height:1.65;
+  }
+  .resena-card .rc-photo{
+    margin-top:14px;
+    width:120px; height:120px;
+    object-fit:cover;
+    border:2.5px solid var(--ink);
+    cursor:pointer;
+    display:block;
+  }
+  .resenas-empty{
+    font-family:'Space Mono', monospace;
+    font-size:14px;
+    color:var(--ink-soft);
+    border:2px dashed var(--ink-soft);
+    padding:24px;
     text-align:center;
   }
-  .ticket-head .th-brand{ font-family:'Bangers', cursive; font-size:24px; letter-spacing:0.03em; }
-  .ticket-head .th-sub{ font-size:10.5px; letter-spacing:0.16em; text-transform:uppercase; color:var(--orange); margin-top:4px; }
-  .ticket-body{ padding:22px; }
-  .ticket-line{
-    display:flex; justify-content:space-between; gap:10px;
-    font-size:12.5px; color:var(--ink-soft); padding:7px 0;
-    border-bottom:1px dashed var(--cream-dk);
-  }
-  .ticket-line .tl-name{ flex:1; }
-  .ticket-line .tl-price{ color:var(--ink); font-weight:700; white-space:nowrap; }
-  .ticket-empty{
-    font-size:12.5px; color:var(--ink-soft); text-align:center; padding:18px 6px; line-height:1.6;
-  }
-  .ticket-total{
-    display:flex; justify-content:space-between; align-items:center;
-    margin-top:14px; padding-top:14px; border-top:2px solid var(--ink);
-  }
-  .ticket-total .tt-label{ font-size:13px; letter-spacing:0.06em; text-transform:uppercase; color:var(--ink-soft); }
-  .ticket-total .tt-value{ font-family:'Bangers', cursive; font-size:30px; color:var(--orange-dk); }
-  .ticket-foot{
-    padding:14px 22px 20px;
-    font-size:11px; color:var(--ink-soft); line-height:1.6; text-align:center;
-  }
-  .ticket::before, .ticket::after{
-    content:"";
-    position:absolute; left:0; right:0; height:12px;
-    background:
-      radial-gradient(circle at 8px 6px, transparent 6px, var(--cream) 6.5px) repeat-x;
-    background-size:16px 12px;
-  }
-  .ticket::before{ top:-3px; }
-  .ticket::after{ bottom:-3px; transform:rotate(180deg); }
 
+  .resena-form{padding:28px 26px;}
+  .resena-form h3{
+    font-size:24px;
+    color:var(--ink);
+    margin-bottom:16px;
+  }
+  .rf-label{
+    display:block;
+    font-family:'Space Mono', monospace;
+    font-weight:700;
+    font-size:11.5px;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    color:var(--ink-soft);
+    margin:16px 0 6px;
+  }
+  .rf-label:first-of-type{ margin-top:0; }
+  .rf-input{
+    width:100%;
+    font-family:'Space Grotesk', sans-serif;
+    font-size:15px;
+    color:var(--ink);
+    background:var(--cream-lt);
+    border:2.5px solid var(--ink);
+    padding:11px 14px;
+    resize:vertical;
+  }
+  .rf-input:focus{ outline:3px solid var(--orange); outline-offset:1px; }
+  .rf-stars{ display:flex; gap:6px; }
+  .rf-star{
+    font-size:30px;
+    line-height:1;
+    background:none;
+    border:none;
+    color:var(--cream-dk);
+    cursor:pointer;
+    padding:2px;
+    transition:transform .1s ease;
+  }
+  .rf-star:hover{ transform:scale(1.15); }
+  .rf-star.on{ color:var(--orange); }
+  .rf-file{
+    font-family:'Space Mono', monospace;
+    font-size:12.5px;
+    color:var(--ink-soft);
+  }
+  .rf-preview{ margin-top:10px; }
+  .rf-preview img{
+    width:90px; height:90px;
+    object-fit:cover;
+    border:2.5px solid var(--ink);
+  }
+  .rf-submit{ width:100%; justify-content:center; margin-top:22px; }
+  .rf-note{
+    margin-top:12px;
+    font-size:12.5px;
+    color:var(--ink-soft);
+    line-height:1.5;
+  }
+
+  /* ---------- CONTACT ---------- */
+  .contact{
+    position:relative; text-align:center;
+    background:var(--ink);
+    border-top:3px solid var(--ink);
+  }
+  .contact .eyebrow{color:var(--orange);}
+  .contact .eyebrow::before{color:var(--orange);}
+  .contact h2{font-size:clamp(38px,6.5vw,64px); color:var(--cream-lt);}
+  .contact p.lead{max-width:520px; margin:16px auto 0; color:var(--cream-dk); font-size:17px; line-height:1.6;}
+  .contact-details{margin-top:44px; display:flex; justify-content:center; gap:44px; flex-wrap:wrap;}
+  .cd-item{text-align:left; min-width:180px;}
+  .cd-item .cd-label{
+    font-family:'Space Mono', monospace; font-weight:700;
+    font-size:11px; letter-spacing:0.14em; text-transform:uppercase; color:var(--orange);
+  }
+  .cd-item .cd-value{margin-top:8px; font-size:17px; color:var(--cream-lt); font-weight:600;}
+  .contact .big-cta{margin-top:44px; display:flex; gap:18px; justify-content:center; flex-wrap:wrap;}
+  .whatsapp-btn{
+    font-family:'Space Mono', monospace; font-weight:700;
+    font-size:15px; letter-spacing:0.05em; text-transform:uppercase;
+    padding:20px 42px;
+    background:var(--green);
+    color:var(--cream-lt);
+    border:3px solid var(--cream-lt);
+    box-shadow:6px 6px 0 var(--orange);
+    display:inline-flex; align-items:center; gap:12px;
+    transition:transform .12s, box-shadow .12s;
+  }
+  .whatsapp-btn:hover{transform:translate(-3px,-3px); box-shadow:9px 9px 0 var(--orange);}
+  .facebook-btn{
+    font-family:'Space Mono', monospace; font-weight:700;
+    font-size:15px; letter-spacing:0.05em; text-transform:uppercase;
+    padding:20px 42px;
+    background:var(--fb-blue);
+    color:var(--cream-lt);
+    border:3px solid var(--cream-lt);
+    box-shadow:6px 6px 0 var(--orange);
+    display:inline-flex; align-items:center; gap:12px;
+    transition:transform .12s, box-shadow .12s;
+  }
+  .facebook-btn:hover{transform:translate(-3px,-3px); box-shadow:9px 9px 0 var(--orange);}
+  .instagram-btn{
+    font-family:'Space Mono', monospace; font-weight:700;
+    font-size:15px; letter-spacing:0.05em; text-transform:uppercase;
+    padding:20px 42px;
+    background:linear-gradient(45deg, #F58529, #DD2A7B, #8134AF, #515BD4);
+    color:var(--cream-lt);
+    border:3px solid var(--cream-lt);
+    box-shadow:6px 6px 0 var(--orange);
+    display:inline-flex; align-items:center; gap:12px;
+    transition:transform .12s, box-shadow .12s;
+  }
+  .instagram-btn:hover{transform:translate(-3px,-3px); box-shadow:9px 9px 0 var(--orange);}
+
+  /* ---------- FOOTER ---------- */
   footer{padding:32px 24px; background:var(--ink);}
   .foot-wrap{
     max-width:1120px; margin:0 auto;
     display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:14px;
   }
   .foot-wrap .brand{font-size:19px; color:var(--cream-lt);}
+  .foot-wrap .brand .badge-dot{background:var(--orange); border-color:var(--cream-lt);}
   footer .fine{font-family:'Space Mono', monospace; font-size:11.5px; color:var(--cream-dk); letter-spacing:0.03em;}
 
+  /* ---------- AUTH (login / registro) ---------- */
+  .auth-area{ display:flex; align-items:center; gap:8px; }
+  .auth-hello{
+    font-family:'Space Mono', monospace; font-weight:700; font-size:11px;
+    letter-spacing:0.04em; text-transform:uppercase; color:var(--ink-soft);
+    white-space:nowrap;
+  }
+  .nav-cta.auth-register{ background:var(--orange); }
+  .nav-cta.auth-logout{ background:var(--ink); }
+
+  .modal-overlay{
+    position:fixed; inset:0; z-index:3000;
+    background:rgba(27,23,18,0.78);
+    display:none; align-items:center; justify-content:center;
+    padding:20px;
+  }
+  .modal-overlay.open{ display:flex; }
+  .modal-box{
+    background:var(--paper); border:3px solid var(--ink); box-shadow:8px 8px 0 var(--ink);
+    max-width:380px; width:100%; padding:30px 26px 26px; position:relative;
+  }
+  .modal-close{
+    position:absolute; top:12px; right:14px;
+    background:none; border:none; font-size:20px; line-height:1; cursor:pointer; color:var(--ink);
+  }
+  .modal-tabs{ display:flex; gap:8px; margin-bottom:20px; }
+  .modal-tab{
+    flex:1; padding:10px; font-family:'Space Mono', monospace; font-weight:700; font-size:11.5px;
+    text-transform:uppercase; letter-spacing:0.05em;
+    background:var(--cream-lt); border:2px solid var(--ink); cursor:pointer; color:var(--ink-soft);
+  }
+  .modal-tab.active{ background:var(--orange); color:var(--cream-lt); }
+  .modal-msg{ font-size:13px; color:var(--ink-soft); line-height:1.5; margin-bottom:16px; display:none; }
+  .modal-box h3{ font-size:22px; margin-bottom:4px; }
+  .auth-error{ color:#B0413E; font-size:12.5px; margin-top:10px; display:none; }
+
   @media (prefers-reduced-motion: reduce){ *{transition:none !important;} }
-  a:focus-visible, button:focus-visible, input:focus-visible{outline:3px solid var(--orange); outline-offset:3px;}
+  a:focus-visible, button:focus-visible{outline:3px solid var(--orange); outline-offset:3px;}
+
+.navlinks a.current{color:var(--orange);}
+.pedido-hero{padding:56px 0 40px;text-align:center;background:radial-gradient(circle at 12% 20%,rgba(217,120,47,.12),transparent 40%),radial-gradient(circle at 88% 75%,rgba(78,104,81,.14),transparent 45%),var(--cream);}
+.pedido-hero .hero-sticker{display:inline-block;font-family:'Space Mono',monospace;font-weight:700;font-size:12px;letter-spacing:.14em;text-transform:uppercase;background:var(--orange);color:var(--cream-lt);padding:9px 18px;border:2.5px solid var(--ink);box-shadow:4px 4px 0 var(--ink);transform:rotate(-3deg);margin-bottom:20px;}
+.pedido-hero h1{font-size:clamp(38px,7vw,68px);color:var(--orange);-webkit-text-stroke:2px var(--ink);text-shadow:5px 5px 0 var(--ink-soft);}
+.pedido-hero p{max-width:560px;margin:20px auto 0;font-size:17px;color:var(--ink-soft);line-height:1.6;}
+.pedido-main{padding:20px 0 100px;}
+.pedido-grid{display:grid;grid-template-columns:1.3fr .9fr;gap:36px;align-items:start;}
+@media (max-width:940px){.pedido-grid{grid-template-columns:1fr;}}
+.form-panel{padding:32px;}
+.form-section{margin-bottom:34px;}
+.form-section:last-child{margin-bottom:0;}
+.form-section h2{font-size:24px;color:var(--ink);margin-bottom:6px;}
+.fs-sub{font-size:13.5px;color:var(--ink-soft);margin-bottom:16px;line-height:1.5;}
+.fs-num{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;background:var(--orange);color:var(--cream-lt);font-family:'Space Mono',monospace;font-weight:700;font-size:13px;margin-right:8px;vertical-align:middle;}
+.rf-label{display:block;font-family:'Space Mono',monospace;font-weight:700;font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft);margin:16px 0 6px;}
+.rf-label:first-of-type{margin-top:0;}
+.rf-input,select.rf-input{width:100%;font-family:'Space Grotesk',sans-serif;font-size:15px;color:var(--ink);background:var(--cream-lt);border:2.5px solid var(--ink);padding:11px 14px;resize:vertical;}
+.rf-input:focus{outline:3px solid var(--orange);outline-offset:1px;}
+.rf-hint{font-size:12px;color:var(--ink-soft);margin-top:6px;line-height:1.5;}
+textarea.rf-input{min-height:96px;}
+.opt-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;}
+@media (max-width:520px){.opt-grid{grid-template-columns:1fr;}}
+.opt-tile{position:relative;border:2.5px solid var(--ink);background:var(--cream-lt);padding:14px 16px;cursor:pointer;transition:transform .12s,box-shadow .12s,background .12s;}
+.opt-tile.oculto{display:none;}
+.opt-tile:hover{transform:translate(-2px,-2px);box-shadow:4px 4px 0 var(--ink);}
+.opt-tile input{position:absolute;opacity:0;pointer-events:none;}
+.opt-top{display:flex;justify-content:space-between;align-items:center;gap:10px;}
+.opt-name{font-weight:700;font-size:14.5px;color:var(--ink);}
+.opt-price{font-family:'Space Mono',monospace;font-weight:700;font-size:12.5px;color:var(--orange-dk);white-space:nowrap;}
+.opt-desc{font-size:12.5px;color:var(--ink-soft);margin-top:4px;line-height:1.5;}
+.opt-tile.checked{background:var(--green);box-shadow:4px 4px 0 var(--ink);}
+.opt-tile.checked .opt-name,.opt-tile.checked .opt-desc,.opt-tile.checked .opt-price{color:var(--cream-lt);}
+.opt-check{width:18px;height:18px;border:2px solid var(--ink);background:var(--cream-lt);display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;font-size:12px;font-weight:700;color:var(--green);}
+.opt-tile.checked .opt-check::after{content:"✓";}
+.sub-opts{margin-top:14px;padding:16px;background:var(--paper);border:2px dashed var(--ink-soft);display:none;}
+.sub-opts.visible{display:block;}
+.sub-opts .rf-label{margin-top:0;}
+.radio-row{display:flex;flex-wrap:wrap;gap:10px;margin:6px 0 14px;}
+.radio-chip{font-family:'Space Mono',monospace;font-size:12.5px;font-weight:700;padding:9px 14px;border:2px solid var(--ink);background:var(--cream-lt);cursor:pointer;display:inline-flex;align-items:center;gap:8px;}
+.radio-chip input{accent-color:var(--orange);}
+.radio-chip.checked{background:var(--orange);color:var(--cream-lt);}
+.gb-row{display:flex;align-items:center;gap:12px;margin-top:6px;}
+.gb-row input[type=range]{flex:1;accent-color:var(--orange);}
+.gb-out{font-family:'Space Mono',monospace;font-weight:700;font-size:14px;background:var(--ink);color:var(--cream-lt);padding:6px 12px;min-width:64px;text-align:center;}
+.repuesto-row{display:grid;grid-template-columns:1fr 110px 34px;gap:8px;margin-bottom:8px;align-items:center;}
+.repuesto-row input{font-family:'Space Grotesk',sans-serif;font-size:14px;color:var(--ink);background:var(--cream-lt);border:2px solid var(--ink);padding:9px 10px;}
+.rm-btn{width:34px;height:34px;border:2px solid var(--ink);background:var(--cream-lt);color:var(--ink);font-weight:700;cursor:pointer;font-size:16px;line-height:1;}
+.rm-btn:hover,.add-repuesto:hover{background:var(--orange);color:var(--cream-lt);}
+.add-repuesto{margin-top:6px;font-family:'Space Mono',monospace;font-weight:700;font-size:12.5px;letter-spacing:.05em;text-transform:uppercase;padding:9px 16px;background:var(--cream-lt);border:2px solid var(--ink);cursor:pointer;}
+.submit-btn{width:100%;justify-content:center;margin-top:8px;font-family:'Space Mono',monospace;font-weight:700;font-size:14px;letter-spacing:.08em;text-transform:uppercase;padding:18px 30px;background:var(--green);color:var(--cream-lt);border:3px solid var(--ink);box-shadow:5px 5px 0 var(--ink);display:flex;align-items:center;gap:10px;transition:transform .12s,box-shadow .12s;cursor:pointer;}
+.submit-btn:hover{transform:translate(-3px,-3px);box-shadow:8px 8px 0 var(--ink);}
+.submit-note{font-size:12px;color:var(--ink-soft);margin-top:12px;line-height:1.5;text-align:center;}
+.form-error{display:none;margin-top:12px;font-family:'Space Mono',monospace;font-size:12.5px;color:#B0413E;background:var(--cream-lt);border:2px solid #B0413E;padding:10px 12px;}
+.ticket-wrap{position:sticky;top:100px;}
+.ticket{background:var(--cream-lt);border:3px solid var(--ink);box-shadow:8px 8px 0 var(--ink);font-family:'Space Mono',monospace;position:relative;}
+.ticket-head{background:var(--ink);color:var(--cream-lt);padding:18px 22px;text-align:center;}
+.th-brand{font-family:'Bangers',cursive;font-size:24px;letter-spacing:.03em;}
+.th-sub{font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--orange);margin-top:4px;}
+.ticket-body{padding:22px;}
+.ticket-line{display:flex;justify-content:space-between;gap:10px;font-size:12.5px;color:var(--ink-soft);padding:7px 0;border-bottom:1px dashed var(--cream-dk);}
+.tl-name{flex:1;}
+.tl-price{color:var(--ink);font-weight:700;white-space:nowrap;}
+.ticket-empty{font-size:12.5px;color:var(--ink-soft);text-align:center;padding:18px 6px;line-height:1.6;}
+.ticket-total{display:flex;justify-content:space-between;align-items:center;margin-top:14px;padding-top:14px;border-top:2px solid var(--ink);}
+.tt-label{font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft);}
+.tt-value{font-family:'Bangers',cursive;font-size:30px;color:var(--orange-dk);}
+.ticket-foot{padding:14px 22px 20px;font-size:11px;color:var(--ink-soft);line-height:1.6;text-align:center;}
+a:focus-visible,button:focus-visible,input:focus-visible{outline:3px solid var(--orange);outline-offset:3px;}
 </style>
 </head>
 <body>
-
 <header>
   <nav class="wrap">
     <a class="brand" href="index.html" aria-label="Ir al inicio"><img src="logo.svg" class="brand-logo" alt="AZ TECH"></a>
@@ -347,6 +956,7 @@
       <a href="index.html#detalle">En detalle</a>
       <a href="index.html#faq">FAQ</a>
       <a href="index.html#sobre-mi">Sobre mí</a>
+      <a href="tienda.html">Tienda</a>
       <a href="pedido.html" class="current">Pedir presupuesto</a>
     </div>
     <div class="nav-ctas">
@@ -364,7 +974,6 @@
     </div>
   </nav>
 </header>
-
 <section class="pedido-hero">
   <div class="wrap">
     <div class="hero-sticker">★ ARMÁ TU PEDIDO ★</div>
@@ -376,23 +985,22 @@
 <section class="pedido-main">
   <div class="wrap">
     <div class="pedido-grid">
-
-      <!-- ============ FORM ============ -->
       <form class="form-panel ink-card" id="pedido-form">
 
         <div class="form-section">
           <h2><span class="fs-num">1</span>Tu equipo</h2>
-          <p class="fs-sub">Contanos qué tipo de equipo es y el modelo, así sé con qué estoy trabajando.</p>
-
+          <p class="fs-sub">Elegí tu equipo: los precios cambian según el modelo de consola.</p>
           <label class="rf-label" for="tipo-equipo">Tipo de equipo</label>
           <select class="rf-input" id="tipo-equipo">
-            <option value="consola">Consola</option>
+            <option value="ps4">PlayStation 4</option>
+            <option value="ps3">PlayStation 3</option>
+            <option value="ps2">PlayStation 2</option>
+            <option value="consola">Otra consola</option>
             <option value="pc">PC de escritorio</option>
             <option value="notebook">Notebook</option>
             <option value="celular">Celular</option>
             <option value="otro">Otro</option>
           </select>
-
           <label class="rf-label" for="modelo-equipo">Marca / modelo</label>
           <input class="rf-input" type="text" id="modelo-equipo" placeholder="Ej: PS4 Slim, notebook Lenovo Ideapad, iPhone 11...">
         </div>
@@ -400,58 +1008,57 @@
         <div class="form-section">
           <h2><span class="fs-num">2</span>¿Qué necesitás?</h2>
           <p class="fs-sub">Podés marcar más de una opción. Los precios son estimados y se confirman en el diagnóstico, que siempre es gratis.</p>
-
           <div class="opt-grid">
             <label class="opt-tile" data-opt="mantenimiento">
-              <input type="checkbox" data-price="40000">
-              <div class="opt-top">
-                <span class="opt-name">Mantenimiento</span>
-                <span class="opt-check"></span>
-              </div>
+              <input type="checkbox" data-price="0">
+              <div class="opt-top"><span class="opt-name">Mantenimiento</span><span class="opt-check"></span></div>
               <div class="opt-desc">Limpieza interna, pasta térmica y revisión general.</div>
-              <div class="opt-price">$40.000</div>
+              <div class="opt-price"></div>
             </label>
-
             <label class="opt-tile" data-opt="reparacion">
-              <input type="checkbox" data-price="30000">
-              <div class="opt-top">
-                <span class="opt-name">Reparación de falla</span>
-                <span class="opt-check"></span>
-              </div>
+              <input type="checkbox" data-price="0">
+              <div class="opt-top"><span class="opt-name">Reparación de falla</span><span class="opt-check"></span></div>
               <div class="opt-desc">Contame el problema abajo.</div>
-              <div class="opt-price">$30.000</div>
+              <div class="opt-price"></div>
             </label>
-
             <label class="opt-tile" data-opt="liberacion">
-              <input type="checkbox" data-price="20000">
-              <div class="opt-top">
-                <span class="opt-name">Liberación de consola</span>
-                <span class="opt-check"></span>
-              </div>
-              <div class="opt-desc">Chipeo, CFW/HEN o GoldHEN según el modelo. Contame cuál es en "Marca / modelo" arriba.</div>
-              <div class="opt-price">$20.000</div>
+              <input type="checkbox" data-price="0">
+              <div class="opt-top"><span class="opt-name">Liberación de consola</span><span class="opt-check"></span></div>
+              <div class="opt-desc">Chipeo, CFW/HEN o GoldHEN según el modelo.</div>
+              <div class="opt-price"></div>
             </label>
-
+            <label class="opt-tile" data-opt="flasheo">
+              <input type="checkbox" data-price="0">
+              <div class="opt-top"><span class="opt-name">Flasheo de Memory Card</span><span class="opt-check"></span></div>
+              <div class="opt-desc">Para correr juegos desde la memory card. La memory card no está incluida.</div>
+              <div class="opt-price"></div>
+            </label>
             <label class="opt-tile" data-opt="juegos">
               <input type="checkbox" data-price="0">
-              <div class="opt-top">
-                <span class="opt-name">Instalación de juegos</span>
-                <span class="opt-check"></span>
-              </div>
-              <div class="opt-desc">Precio según el tamaño total de los juegos.</div>
-              <div class="opt-price">según GB</div>
+              <div class="opt-top"><span class="opt-name">Instalación de juegos</span><span class="opt-check"></span></div>
+              <div class="opt-desc">El precio depende de la cantidad.</div>
+              <div class="opt-price"></div>
             </label>
           </div>
 
-          <!-- Sub-opciones: Juegos -->
           <div class="sub-opts" id="sub-juegos">
-            <label class="rf-label">¿Cuántos juegos querés instalar?</label>
-            <div class="gb-row">
-              <input type="range" id="gb-slider" min="1" max="30" value="1" step="1">
-              <span class="gb-out" id="gb-out">1 juego</span>
+            <div id="ps2-modo-wrap">
+              <label class="rf-label">¿Cómo querés los juegos?</label>
+              <div class="radio-row">
+                <label class="radio-chip"><input type="radio" name="ps2modo" value="sueltos" checked> Juegos sueltos</label>
+                <label class="radio-chip"><input type="radio" name="ps2modo" value="pend"> Pack 10 juegos + pendrive</label>
+                <label class="radio-chip"><input type="radio" name="ps2modo" value="sin"> Pack 10 juegos (sin pendrive)</label>
+              </div>
             </div>
-            <p class="rf-hint" id="gb-precio-hint">$10.000 c/u = $10.000</p>
-            <p class="rf-hint">Cuantos más juegos, menos sale cada uno: 1 = $10.000 · 5+ = $30.000 · 10+ = $80.000 · 20+ = $150.000.</p>
+            <div id="gb-wrap">
+              <label class="rf-label">¿Cuántos juegos querés instalar?</label>
+              <div class="gb-row">
+                <input type="range" id="gb-slider" min="1" max="30" value="1" step="1">
+                <span class="gb-out" id="gb-out">1 juego</span>
+              </div>
+            </div>
+            <p class="rf-hint" id="gb-precio-hint"></p>
+            <p class="rf-hint" id="gb-ayuda"></p>
           </div>
         </div>
 
@@ -477,43 +1084,26 @@
           <h2><span class="fs-num">6</span>Tus datos</h2>
           <label class="rf-label" for="pedido-nombre">Nombre</label>
           <input class="rf-input" type="text" id="pedido-nombre" placeholder="Ej: Thiago" required>
-
           <label class="rf-label" for="pedido-tel">WhatsApp / teléfono</label>
           <input class="rf-input" type="text" id="pedido-tel" placeholder="Ej: 2964 12-3456">
         </div>
 
-        <button type="submit" class="btn-primary submit-btn" id="btn-enviar-pedido">
-          Enviar pedido por WhatsApp →
-        </button>
+        <button type="submit" class="btn-primary submit-btn" id="btn-enviar-pedido">Enviar pedido por WhatsApp →</button>
         <p class="form-error" id="form-error">Che, contame tu nombre y elegí al menos un servicio antes de enviar.</p>
         <p class="submit-note">Se abre WhatsApp con todo este pedido ya escrito. Vos lo revisás antes de mandarlo.</p>
       </form>
 
-      <!-- ============ TICKET (resumen en vivo) ============ -->
       <div class="ticket-wrap">
         <div class="ticket">
-          <div class="ticket-head">
-            <div class="th-brand">AZ TECH</div>
-            <div class="th-sub">Presupuesto estimado</div>
-          </div>
+          <div class="ticket-head"><div class="th-brand">AZ TECH</div><div class="th-sub">Presupuesto estimado</div></div>
           <div class="ticket-body">
-            <div id="ticket-lines">
-              <div class="ticket-empty" id="ticket-empty-msg">Todavía no elegiste nada.<br>Marcá un servicio a la izquierda.</div>
-            </div>
-            <div class="ticket-total">
-              <span class="tt-label">Total</span>
-              <span class="tt-value" id="ticket-total-value">$0</span>
-            </div>
+            <div id="ticket-lines"><div class="ticket-empty" id="ticket-empty-msg">Todavía no elegiste nada.<br>Marcá un servicio a la izquierda.</div></div>
+            <div class="ticket-total"><span class="tt-label">Total</span><span class="tt-value" id="ticket-total-value">$0</span></div>
           </div>
-          <div class="ticket-foot">
-            * Estimado, no es precio final.<br>Se confirma después del diagnóstico gratis.
-          </div>
+          <div class="ticket-foot">* Estimado, no es precio final.<br>Se confirma después del diagnóstico gratis.</div>
         </div>
-        <button type="button" class="btn-primary submit-btn" id="btn-enviar-pedido-ticket" style="margin-top:16px;">
-          Enviar pedido por WhatsApp →
-        </button>
+        <button type="button" class="btn-primary submit-btn" id="btn-enviar-pedido-ticket" style="margin-top:16px;">Enviar pedido por WhatsApp →</button>
       </div>
-
     </div>
   </div>
 </section>
@@ -524,257 +1114,163 @@
     <div class="fine">© 2026 AZ TECH — Service técnico independiente.</div>
   </div>
 </footer>
-
 <script>
 (function(){
-
   // =====================================================================
-  // PRECIOS — AJUSTÁ ESTOS NÚMEROS SI EN ALGÚN MOMENTO CAMBIAN.
-  // Todo lo demás del script se recalcula solo, no hace falta tocar nada más.
+  // PRECIOS — cambiá los números acá y se actualiza todo solo.
+  // mant = mantenimiento, lib = liberación, flash = flasheo memory card,
+  // juego = juego suelto, pack/packP = cantidad y precio del pack.
   // =====================================================================
+  var PRECIOS = {
+    ps4: { mant:25000, lib:20000, juego:8000, pack:5, packP:35000 },
+    ps3: { mant:20000, lib:15000, juego:8000, pack:5, packP:25000 },
+    ps2: { mant:10000, flash:5000, juego:6000, packPend:30000, packSin:10000 },
+    otro:{ mant:40000, lib:20000 }   // PC, notebook, celular, otra consola
+  };
+  var REPARACION = 30000;            // reparación de falla (igual para todos)
+  function tramoOtro(c){ return c>=20?7500 : c>=10?8000 : c>=5?6000 : 10000; } // juegos en "otros"
 
-  // Precio por juego según cantidad total pedida (tramos, precio por unidad):
-  //   1 a 4 juegos   -> $4.000 c/u
-  //   5 a 9 juegos   -> $3.000 c/u
-  //   10 a 19 juegos -> $2.500 c/u
-  //   20 o más       -> $2.000 c/u
-  function precioPorJuego(cant){
-    if(cant >= 20) return 7500;
-    if(cant >= 10) return 8000;
-    if(cant >= 5) return 6000;
-    return 10000;
+  function $(id){ return document.getElementById(id); }
+  function money(n){ return '$' + Math.round(n).toLocaleString('es-AR'); }
+  function esc(s){ return String(s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+  function plural(c){ return c + (c===1 ? ' juego' : ' juegos'); }
+
+  var form = $('pedido-form'), slider = $('gb-slider');
+  var vacio = $('ticket-empty-msg');
+  var tiles = [].slice.call(document.querySelectorAll('.opt-tile'));
+  var chips = [].slice.call(document.querySelectorAll('.radio-chip'));
+
+  function modelo(){ var v = $('tipo-equipo').value; return PRECIOS[v] ? v : 'otro'; }
+  function modoPs2(){ var r = document.querySelector('input[name=ps2modo]:checked'); return r ? r.value : 'sueltos'; }
+
+  // ---- precio de los juegos según el modelo ----
+  function juegos(){
+    var m = modelo(), P = PRECIOS[m], c = +slider.value;
+    if(m === 'ps2'){
+      var md = modoPs2();
+      if(md === 'pend') return { n:'Instalación de juegos: pack 10 juegos + pendrive', p:P.packPend };
+      if(md === 'sin')  return { n:'Instalación de juegos: pack 10 juegos (sin pendrive incluido)', p:P.packSin };
+      return { n:'Instalación de juegos (' + plural(c) + ' a ' + money(P.juego) + ' c/u)', p:c*P.juego };
+    }
+    if(m === 'otro'){
+      var u = tramoOtro(c);
+      return { n:'Instalación de juegos (' + plural(c) + ' a ' + money(u) + ' c/u)', p:c*u };
+    }
+    var k = Math.floor(c / P.pack), r = c % P.pack;
+    var det = k ? k + (k===1?' pack':' packs') + ' de ' + P.pack + (r ? ' + ' + r + (r===1?' suelto':' sueltos') : '') : 'a ' + money(P.juego) + ' c/u';
+    return { n:'Instalación de juegos (' + plural(c) + ': ' + det + ')', p:k*P.packP + r*P.juego };
   }
 
-  var form = document.getElementById('pedido-form');
-  var ticketLines = document.getElementById('ticket-lines');
-  var ticketEmptyMsg = document.getElementById('ticket-empty-msg');
-  var ticketTotalValue = document.getElementById('ticket-total-value');
-  var formError = document.getElementById('form-error');
-
-  var optTiles = Array.prototype.slice.call(document.querySelectorAll('.opt-tile'));
-  var subJuegos = document.getElementById('sub-juegos');
-  var gbSlider = document.getElementById('gb-slider');
-  var gbOut = document.getElementById('gb-out');
-  var gbPrecioHint = document.getElementById('gb-precio-hint');
-  var repuestosList = document.getElementById('repuestos-list');
-  var addRepuestoBtn = document.getElementById('add-repuesto');
-
-  function money(n){
-    return '$' + Math.round(n).toLocaleString('es-AR');
+  // ---- arma las líneas del pedido (ticket y WhatsApp usan lo mismo) ----
+  function lineas(){
+    var L = [], t = 0;
+    tiles.forEach(function(tile){
+      var cb = tile.querySelector('input');
+      if(!cb.checked || tile.classList.contains('oculto')) return;
+      if(tile.dataset.opt === 'juegos'){ var j = juegos(); L.push({ n:j.n, p:j.p }); t += j.p; }
+      else { var p = +cb.dataset.price; L.push({ n:tile.querySelector('.opt-name').textContent, p:p }); t += p; }
+    });
+    document.querySelectorAll('.repuesto-row').forEach(function(row){
+      var n = row.querySelector('.rep-nombre').value.trim(), p = parseFloat(row.querySelector('.rep-precio').value);
+      if(n || !isNaN(p)){ L.push({ n:'Repuesto: ' + (n || 'sin especificar'), p:isNaN(p) ? null : p }); if(!isNaN(p)) t += p; }
+    });
+    return { L:L, t:t };
   }
 
-  // ---- toggle visual de los opt-tile ----
-  // El <label> ya togglea el checkbox solo (comportamiento nativo del navegador),
-  // así que acá solo escuchamos el evento "change" para sincronizar estilos y el ticket.
-  optTiles.forEach(function(tile){
-    var checkbox = tile.querySelector('input[type=checkbox]');
-    checkbox.addEventListener('change', function(){
-      tile.classList.toggle('checked', checkbox.checked);
-      if(tile.dataset.opt === 'juegos'){
-        subJuegos.classList.toggle('visible', checkbox.checked);
-      }
+  function recalcular(){
+    var r = lineas(), box = $('ticket-lines');
+    box.innerHTML = '';
+    if(!r.L.length){ box.appendChild(vacio); }
+    r.L.forEach(function(l){
+      var d = document.createElement('div');
+      d.className = 'ticket-line';
+      d.innerHTML = '<span class="tl-name">' + esc(l.n) + '</span><span class="tl-price">' + (l.p === null ? 'sin precio' : money(l.p)) + '</span>';
+      box.appendChild(d);
+    });
+    $('ticket-total-value').textContent = money(r.t) + (r.L.some(function(l){ return l.p === null; }) ? ' +' : '');
+  }
+
+  function actualizarJuegos(){
+    var m = modelo(), pack = m === 'ps2' && modoPs2() !== 'sueltos', c = +slider.value;
+    $('gb-out').textContent = plural(c);
+    $('gb-wrap').style.display = pack ? 'none' : '';
+    $('gb-precio-hint').textContent = 'Total en juegos: ' + money(juegos().p);
+    recalcular();
+  }
+
+  // ---- cambia precios y opciones al elegir el equipo ----
+  function aplicarModelo(){
+    var m = modelo(), P = PRECIOS[m];
+    tiles.forEach(function(tile){
+      var o = tile.dataset.opt, cb = tile.querySelector('input'), pr = tile.querySelector('.opt-price');
+      var v = o==='mantenimiento' ? P.mant : o==='reparacion' ? REPARACION : o==='liberacion' ? P.lib : o==='flasheo' ? P.flash : null;
+      var ocultar = (o==='liberacion' || o==='flasheo') && v == null;
+      tile.classList.toggle('oculto', ocultar);
+      if(ocultar && cb.checked){ cb.checked = false; tile.classList.remove('checked'); }
+      if(o === 'juegos'){ pr.textContent = P.juego ? money(P.juego) + ' c/u' : 'según cantidad'; }
+      else { cb.dataset.price = v || 0; if(v != null) pr.textContent = money(v); }
+    });
+    $('ps2-modo-wrap').style.display = m === 'ps2' ? '' : 'none';
+    $('gb-ayuda').textContent =
+      m === 'ps2' ? 'Sueltos ' + money(P.juego) + ' c/u. Pack de 10 juegos con pendrive incluido: ' + money(P.packPend) + '. Pack de 10 juegos en tu propio pendrive: ' + money(P.packSin) + '.' :
+      m === 'otro' ? 'Cuantos más juegos, menos sale cada uno: 1 = $10.000 c/u · 5+ = $6.000 c/u · 10+ = $8.000 c/u · 20+ = $7.500 c/u.' :
+      money(P.juego) + ' c/u. Pack de ' + P.pack + ' juegos: ' + money(P.packP) + ' (cada ' + P.pack + ' juegos se cobran como pack).';
+    actualizarJuegos();
+  }
+
+  tiles.forEach(function(tile){
+    var cb = tile.querySelector('input');
+    cb.addEventListener('change', function(){
+      tile.classList.toggle('checked', cb.checked);
+      if(tile.dataset.opt === 'juegos') $('sub-juegos').classList.toggle('visible', cb.checked);
       recalcular();
     });
   });
-
-  // ---- cantidad de juegos ----
-  function actualizarGB(){
-    var cant = parseInt(gbSlider.value, 10);
-    gbOut.textContent = cant + (cant === 1 ? ' juego' : ' juegos');
-    var precioUnit = precioPorJuego(cant);
-    var total = cant * precioUnit;
-    gbPrecioHint.textContent = money(precioUnit) + ' c/u = ' + money(total);
-    recalcular();
-  }
-  gbSlider.addEventListener('input', actualizarGB);
+  chips.forEach(function(chip){
+    chip.querySelector('input').addEventListener('change', function(){
+      chips.forEach(function(c){ c.classList.toggle('checked', c.querySelector('input').checked); });
+      actualizarJuegos();
+    });
+  });
+  slider.addEventListener('input', actualizarJuegos);
+  $('tipo-equipo').addEventListener('change', aplicarModelo);
 
   // ---- repuestos dinámicos ----
-  function agregarRepuesto(nombre, precio){
+  $('add-repuesto').addEventListener('click', function(){
     var row = document.createElement('div');
     row.className = 'repuesto-row';
-    row.innerHTML =
-      '<input type="text" class="rep-nombre" placeholder="Nombre del repuesto (ej: pantalla, batería)" value="' + (nombre||'') + '">' +
-      '<input type="number" class="rep-precio" placeholder="$" min="0" step="500" value="' + (precio||'') + '">' +
+    row.innerHTML = '<input type="text" class="rep-nombre" placeholder="Nombre del repuesto (ej: pantalla, batería)">' +
+      '<input type="number" class="rep-precio" placeholder="$" min="0" step="500">' +
       '<button type="button" class="rm-btn" aria-label="Quitar repuesto">✕</button>';
-    repuestosList.appendChild(row);
-
+    $('repuestos-list').appendChild(row);
     row.querySelector('.rep-nombre').addEventListener('input', recalcular);
     row.querySelector('.rep-precio').addEventListener('input', recalcular);
-    row.querySelector('.rm-btn').addEventListener('click', function(){
-      row.remove();
-      recalcular();
-    });
-  }
-  addRepuestoBtn.addEventListener('click', function(){ agregarRepuesto(); });
-
-  // ---- recalcular ticket ----
-  function recalcular(){
-    var lineas = [];
-    var total = 0;
-
-    optTiles.forEach(function(tile){
-      var checkbox = tile.querySelector('input[type=checkbox]');
-      if(!checkbox.checked) return;
-      var opt = tile.dataset.opt;
-      var nombre = tile.querySelector('.opt-name').textContent;
-
-      if(opt === 'mantenimiento'){
-        var p = parseInt(checkbox.dataset.price, 10);
-        lineas.push({ nombre: nombre, precio: p });
-        total += p;
-      } else if(opt === 'reparacion'){
-        var pRep = parseInt(checkbox.dataset.price, 10);
-        lineas.push({ nombre: nombre, precio: pRep });
-        total += pRep;
-      } else if(opt === 'liberacion'){
-        var pLib = parseInt(checkbox.dataset.price, 10);
-        lineas.push({ nombre: nombre, precio: pLib });
-        total += pLib;
-      } else if(opt === 'juegos'){
-        var cant = parseInt(gbSlider.value, 10);
-        var precioUnit = precioPorJuego(cant);
-        var precioJuegos = cant * precioUnit;
-        lineas.push({ nombre: nombre + ' (' + cant + (cant===1?' juego':' juegos') + ' a ' + money(precioUnit) + ' c/u)', precio: precioJuegos });
-        total += precioJuegos;
-      }
-    });
-
-    // repuestos
-    document.querySelectorAll('.repuesto-row').forEach(function(row){
-      var nombre = row.querySelector('.rep-nombre').value.trim();
-      var precio = parseFloat(row.querySelector('.rep-precio').value);
-      if(nombre || !isNaN(precio)){
-        lineas.push({
-          nombre: 'Repuesto: ' + (nombre || 'sin especificar'),
-          precio: isNaN(precio) ? null : precio,
-          nota: isNaN(precio) ? 'sin precio' : null
-        });
-        if(!isNaN(precio)) total += precio;
-      }
-    });
-
-    // pintar ticket
-    ticketLines.innerHTML = '';
-    if(lineas.length === 0){
-      ticketLines.appendChild(ticketEmptyMsg);
-    } else {
-      lineas.forEach(function(l){
-        var div = document.createElement('div');
-        div.className = 'ticket-line';
-        var precioTxt = l.precio !== null ? money(l.precio) : (l.nota || 'a confirmar');
-        div.innerHTML = '<span class="tl-name">' + escapeHtml(l.nombre) + '</span><span class="tl-price">' + escapeHtml(precioTxt) + '</span>';
-        ticketLines.appendChild(div);
-      });
-    }
-    ticketTotalValue.textContent = money(total) + (lineasTieneAconfirmar(lineas) ? ' +' : '');
-  }
-
-  function lineasTieneAconfirmar(lineas){
-    return lineas.some(function(l){ return l.precio === null; });
-  }
-
-  function escapeHtml(str){
-    return String(str).replace(/[&<>"']/g, function(c){
-      return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
-    });
-  }
+    row.querySelector('.rm-btn').addEventListener('click', function(){ row.remove(); recalcular(); });
+  });
 
   // ---- envío por WhatsApp ----
   form.addEventListener('submit', function(e){
     e.preventDefault();
-
-    var nombre = document.getElementById('pedido-nombre').value.trim();
-    var algunServicioElegido = optTiles.some(function(t){ return t.querySelector('input').checked; });
-
-    if(!nombre || !algunServicioElegido){
-      formError.style.display = 'block';
-      return;
-    }
-    formError.style.display = 'none';
-
-    var tipoEquipo = document.getElementById('tipo-equipo').value;
-    var modeloEquipo = document.getElementById('modelo-equipo').value.trim();
-    var descripcion = document.getElementById('descripcion-falla').value.trim();
-    var nota = document.getElementById('nota-adicional').value.trim();
-    var tel = document.getElementById('pedido-tel').value.trim();
-
-    var tipoLabels = { consola:'Consola', pc:'PC de escritorio', notebook:'Notebook', celular:'Celular', otro:'Otro' };
-
-    var msg = [];
-    msg.push('Hola AZ TECH! Quiero pedir un presupuesto.');
-    msg.push('');
-    msg.push('*Nombre:* ' + nombre);
+    var nombre = $('pedido-nombre').value.trim(), r = lineas();
+    if(!nombre || !r.L.some(function(l){ return !/^Repuesto/.test(l.n); })){ $('form-error').style.display = 'block'; return; }
+    $('form-error').style.display = 'none';
+    var sel = $('tipo-equipo'), mod = $('modelo-equipo').value.trim();
+    var tel = $('pedido-tel').value.trim(), desc = $('descripcion-falla').value.trim(), nota = $('nota-adicional').value.trim();
+    var msg = ['Hola AZ TECH! Quiero pedir un presupuesto.', '', '*Nombre:* ' + nombre];
     if(tel) msg.push('*Contacto:* ' + tel);
-    msg.push('*Equipo:* ' + tipoLabels[tipoEquipo] + (modeloEquipo ? ' - ' + modeloEquipo : ''));
-    msg.push('');
-    msg.push('*Servicios pedidos:*');
-
-    var lineas = [];
-    var total = 0;
-
-    optTiles.forEach(function(tile){
-      var checkbox = tile.querySelector('input[type=checkbox]');
-      if(!checkbox.checked) return;
-      var opt = tile.dataset.opt;
-      var nombreOpt = tile.querySelector('.opt-name').textContent;
-
-      if(opt === 'mantenimiento'){
-        var p = parseInt(checkbox.dataset.price, 10);
-        lineas.push('- ' + nombreOpt + ': ' + money(p));
-        total += p;
-      } else if(opt === 'reparacion'){
-        var pRep2 = parseInt(checkbox.dataset.price, 10);
-        lineas.push('- ' + nombreOpt + ': ' + money(pRep2));
-        total += pRep2;
-      } else if(opt === 'liberacion'){
-        var pLib2 = parseInt(checkbox.dataset.price, 10);
-        lineas.push('- ' + nombreOpt + ': ' + money(pLib2));
-        total += pLib2;
-      } else if(opt === 'juegos'){
-        var cant = parseInt(gbSlider.value, 10);
-        var precioUnit = precioPorJuego(cant);
-        var precioJuegos = cant * precioUnit;
-        lineas.push('- ' + nombreOpt + ' (' + cant + (cant===1?' juego':' juegos') + ' a ' + money(precioUnit) + ' c/u): ' + money(precioJuegos));
-        total += precioJuegos;
-      }
-    });
-
-    document.querySelectorAll('.repuesto-row').forEach(function(row){
-      var n = row.querySelector('.rep-nombre').value.trim();
-      var pr = parseFloat(row.querySelector('.rep-precio').value);
-      if(n || !isNaN(pr)){
-        lineas.push('- Repuesto (' + (n || 'sin especificar') + '): ' + (isNaN(pr) ? 'sin precio' : money(pr)));
-        if(!isNaN(pr)) total += pr;
-      }
-    });
-
-    msg = msg.concat(lineas);
-    msg.push('');
-    msg.push('*Total estimado:* ' + money(total));
-    if(descripcion) { msg.push(''); msg.push('*Qué le pasa:* ' + descripcion); }
-    if(nota) { msg.push(''); msg.push('*Nota:* ' + nota); }
-
-    var texto = encodeURIComponent(msg.join('\n'));
-    window.open('https://wa.me/5492964574506?text=' + texto, '_blank');
+    msg.push('*Equipo:* ' + sel.options[sel.selectedIndex].text + (mod ? ' - ' + mod : ''), '', '*Servicios pedidos:*');
+    r.L.forEach(function(l){ msg.push('- ' + l.n + ': ' + (l.p === null ? 'sin precio' : money(l.p))); });
+    msg.push('', '*Total estimado:* ' + money(r.t));
+    if(desc) msg.push('', '*Qué le pasa:* ' + desc);
+    if(nota) msg.push('', '*Nota:* ' + nota);
+    window.open('https://wa.me/5492964574506?text=' + encodeURIComponent(msg.join('\n')), '_blank');
+  });
+  $('btn-enviar-pedido-ticket').addEventListener('click', function(){
+    if(form.requestSubmit) form.requestSubmit(); else form.dispatchEvent(new Event('submit', {cancelable:true}));
   });
 
-  // ---- botón de WhatsApp de la notita (ticket) dispara el mismo envío del form ----
-  var btnEnviarTicket = document.getElementById('btn-enviar-pedido-ticket');
-  btnEnviarTicket.addEventListener('click', function(){
-    if(form.requestSubmit){
-      form.requestSubmit();
-    } else {
-      var evt = document.createEvent('Event');
-      evt.initEvent('submit', true, true);
-      if(form.dispatchEvent(evt)){ form.submit(); }
-    }
-  });
-
-  // init
-  actualizarGB();
-  recalcular();
+  aplicarModelo();
 })();
 </script>
-
 </body>
 </html>
