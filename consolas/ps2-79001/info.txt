@@ -1,7 +1,7 @@
 Copiá esta carpeta, cambiale el nombre (sin espacios ni tildes, ej: ps2-79001)
 y editá los datos. Todo lo que escribas antes de la primera línea con "nombre" se ignora.
 
-nombre: PlayStation 2 Slim SCPH-79001
+nombre: PlayStation 2 Slim
 precio: $80.000
 estado: Usada · Digital
 vendida: no
