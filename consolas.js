@@ -5,7 +5,7 @@
 
   var BASE = 'consolas/', EXTS = ['jpeg','jpg','png','webp'], MAX_FOTOS = 15;
   var WA = 'https://wa.me/5492964574506?text=';
-  var KEYS = ['nombre','precio','estado','vendida','descripcion','caracteristicas','especificaciones','detalles','fotos'];
+  var KEYS = ['nombre','precio','estado','vendida','descripcion','caracteristicas','especificaciones','detalles','fotos','modelo','incluye'];
   var CONSOLAS = [];
 
   function esc(s){
@@ -32,15 +32,20 @@
     var lst = function(k){
       return (out[k] || []).map(function(s){ return s.replace(/^[-•*]\s*/, '').trim(); }).filter(Boolean);
     };
+    var pares = function(k){
+      return lst(k).map(function(s){
+        var i = s.indexOf(':');
+        return i < 0 ? [s, ''] : [s.slice(0, i).trim(), s.slice(i + 1).trim()];
+      });
+    };
     return {
       nombre: g('nombre'), precio: g('precio'), estado: g('estado'),
       vendida: /^(si|true|1|vendida)/.test(norm(g('vendida'))),
       descripcion: g('descripcion'),
       caracteristicas: lst('caracteristicas'),
-      especificaciones: lst('especificaciones').map(function(s){
-        var i = s.indexOf(':');
-        return i < 0 ? [s, ''] : [s.slice(0, i).trim(), s.slice(i + 1).trim()];
-      }),
+      modelo: g('modelo'),
+      especificaciones: pares('especificaciones'),
+      incluye: pares('incluye'),
       detalles: lst('detalles'),
       fotos: lst('fotos')
     };
@@ -92,10 +97,10 @@
     return '<div class="tm-sec"><h4>' + titulo + '</h4><ul>' +
       items.map(function(t){ return '<li>' + esc(t) + '</li>'; }).join('') + '</ul></div>';
   }
-  function specs(items){
+  function specs(titulo, items){
     if(!items.length) return '';
-    return '<div class="tm-sec"><h4>⚙️ Especificaciones</h4>' +
-      items.map(function(p){ return '<div class="tm-spec"><b>' + esc(p[0]) + '</b><span>' + esc(p[1]) + '</span></div>'; }).join('') + '</div>';
+    return '<div class="tm-sec"><h4>' + titulo + '</h4>' +
+      items.map(function(p){ return '<div class="tm-spec">' + (p[1] ? '<b>' + esc(p[0]) + '</b><span>' + esc(p[1]) + '</span>' : '<span style="text-align:left">' + esc(p[0]) + '</span>') + '</div>'; }).join('') + '</div>';
   }
 
   /* ---------- modal tipo publicación ---------- */
@@ -140,9 +145,11 @@
     body.innerHTML =
       '<div class="tm-price"><span>' + esc(c.precio) + '</span>' + (c.estado ? '<em>' + esc(c.estado) + '</em>' : '') + '</div>' +
       '<h3>' + esc(c.nombre) + '</h3>' +
+      (c.modelo ? '<p style="margin-top:6px;font-family:\'Space Mono\',monospace;font-size:12.5px;color:var(--ink-soft)">Modelo: ' + esc(c.modelo) + '</p>' : '') +
       (c.descripcion ? '<div class="tm-sec"><h4>📝 Descripción</h4><p>' + esc(c.descripcion) + '</p></div>' : '') +
       lista('⭐ Características', c.caracteristicas) +
-      specs(c.especificaciones) +
+      specs('⚙️ Especificaciones', c.especificaciones) +
+      specs('🎁 Incluye', c.incluye) +
       lista('📦 Detalles', c.detalles) +
       (c.vendida
         ? '<p class="tm-sold">Esta consola ya se vendió.</p>'
