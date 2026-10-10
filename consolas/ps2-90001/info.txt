@@ -19,7 +19,8 @@ Incluye:
 Joystick: (1)
 Cable de alimentacion: si
 Cable de video: AV
-Juegos: Spider-Man 2 y Red Dead Revolver (copia)
+Juegos: Spider-Man 2 y Red Dead Revolver (copias)
+Extra: disco con uLaunchELF
 Memory Card: no
 
 detalles:
