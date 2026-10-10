@@ -1,0 +1,32 @@
+Copiá esta carpeta, cambiale el nombre (sin espacios ni tildes, ej: ps2-79001)
+y editá los datos. Todo lo que escribas antes de la primera línea con "nombre" se ignora.
+
+nombre: PlayStation 3 Super Slim
+precio: $100.000
+estado: Usada · Digital
+vendida: no
+Modelo: CECH-4011B
+
+Descripción:
+PS3 SuperSlim Digital con limpieza interna completa.
+No tiene lectora, tiene 20 juegos instalados, 5 tiendas y varios programas. Hen 4.93 ultima version.
+
+Características:
+- Limpieza interna completa
+- Sin lectora
+- HEN 4.92 Instalado
+
+Incluye:
+Disco: 500GB
+Joystick: (1)
+Cable de alimentacion: si
+Cable de video: HDMI
+Juegos: 20 instalados
+Tiendas: 5
+
+detalles:
+- Incluye joystick, cable HDMI y cable de poder
+- Se descartó la lectora
+- Se instaló un disco de 500GB
+- Juegos instalados en ISO y PKG
+- Variedad y varios programas/utilidades instaladas
