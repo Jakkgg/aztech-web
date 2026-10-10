@@ -5,7 +5,7 @@
 
   var BASE = 'consolas/', EXTS = ['jpeg','jpg','png','webp'], MAX_FOTOS = 15;
   var WA = 'https://wa.me/5492964574506?text=';
-  var KEYS = ['nombre','precio','estado','vendida','descripcion','caracteristicas','especificaciones','detalles'];
+  var KEYS = ['nombre','precio','estado','vendida','descripcion','caracteristicas','especificaciones','detalles','fotos'];
   var CONSOLAS = [];
 
   function esc(s){
@@ -41,7 +41,8 @@
         var i = s.indexOf(':');
         return i < 0 ? [s, ''] : [s.slice(0, i).trim(), s.slice(i + 1).trim()];
       }),
-      detalles: lst('detalles')
+      detalles: lst('detalles'),
+      fotos: lst('fotos')
     };
   }
 
@@ -75,7 +76,9 @@
         var t = await fetch(dir(c) + 'info.txt', {cache:'no-cache'});
         if(!t.ok) return null;
         var d = parsear(await t.text());
-        d.fotos = await fotosDe(c);
+        d.fotos = d.fotos.length
+          ? d.fotos.map(function(nombre){ return dir(c) + encodeURIComponent(nombre); })
+          : await fotosDe(c);
         if(!d.nombre) d.nombre = c;
         return d;
       }catch(e){ return null; }
